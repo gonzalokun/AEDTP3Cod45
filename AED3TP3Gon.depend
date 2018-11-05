@@ -1,0 +1,40 @@
+# depslib dependency file v1.0
+1514140574 source:c:\proyectos\aed3tp3gon\main.cpp
+	<iostream>
+
+1541380296 source:c:\proyectos\aed3tp3gon\src\sweep.cpp
+	"sweep.hpp"
+
+1541387470 c:\proyectos\aed3tp3gon\include\sweep.hpp
+	<iostream>
+	<vector>
+	<climits>
+	<cstring>
+	<algorithm>
+	<cmath>
+	<limits>
+	<utility>
+	<cstdio>
+	<queue>
+	<list>
+	<random>
+
+1541380455 source:c:\proyectos\aed3tp3gon\src\cluster.cpp
+	"cluster.h"
+	<fstream>
+	<chrono>
+
+1541385979 c:\proyectos\aed3tp3gon\include\cluster.h
+	<iostream>
+	<vector>
+	<climits>
+	<cstring>
+	<algorithm>
+	<cmath>
+	<limits>
+	<utility>
+	<cstdio>
+	<queue>
+	<list>
+	<random>
+
