@@ -451,6 +451,21 @@ struct NodoPol{
     float distacia;
     float angulo;
 
+//    float x;
+//    float y;
+
+    NodoPol(){
+        this->id = -1;
+        this->distacia = 0;
+        this->angulo = 0;
+    }
+
+    NodoPol(int id, float distacia, float angulo){
+        this->id = id;
+        this->distacia = distacia;
+        this->angulo = angulo;
+    }
+
     bool operator<(NodoPol& n){
 //        if(this->angulo < n.angulo || this->distacia < n.distacia || this->id < n.id){
 //            return true;
@@ -466,16 +481,31 @@ private:
     //Guarda el id, el ángulo y la distancia de cada punto
     //Ordenado por ángulo, distancia, id
     priority_queue<NodoPol> listaCP;
+    Nodo centro;
 public:
     ListaCordPol(){
         //Por ahora nada
     }
 
     void setearNodoBase(Nodo n){
-        //
+        centro = n;
     }
 
     void agregarNodo(Nodo n){
+        NodoPol np;
+        np.id = n.indice;
+        np.distacia = sqrt(pow(n.x) + pow(n.y));
+        np.angulo = atan2(n.y, n.x) * 180 / PI;
+
+        listaCP.push(np);
+    }
+
+    NodoPol siguiente(){
+        listaCP.top();
+    }
+
+    void pop(){
+        listaCP.pop();
     }
 };
 
