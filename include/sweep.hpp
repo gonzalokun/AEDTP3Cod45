@@ -15,6 +15,8 @@
 #include <random>
 #include <tuple>
 
+#define PI 3.14159265358979323846
+
 using namespace std;
 
 typedef float Peso;
@@ -494,8 +496,13 @@ public:
     void agregarNodo(Nodo n){
         NodoPol np;
         np.id = n.indice;
-        np.distacia = sqrt(pow(n.x) + pow(n.y));
-        np.angulo = atan2(n.y, n.x) * 180 / PI;
+
+        //Se calcula la distancia y el ángulo en base al punto del centro
+        float newX = n.x - centro.x;
+        float newY = n.y - centro.y;
+
+        np.distacia = sqrt(pow(newX) + pow(newY));
+        np.angulo = atan2(n.y, newX) * 180 / PI;
 
         listaCP.push(np);
     }
@@ -509,6 +516,6 @@ public:
     }
 };
 
-void cargarDatos(ListaCordPol& lcp);
+void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn);
 
 #endif // SWEEP_HPP
