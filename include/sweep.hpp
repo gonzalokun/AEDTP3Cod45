@@ -21,16 +21,6 @@ using namespace std;
 
 typedef float Peso;
 
-float cantDespuesDeComa(const float& x, const int& numDecimals) {
-    int y = x;
-    float z = x-y;
-    float m = pow(10,numDecimals);
-    float q = z*m;
-    float r = round(q);
-
-    return static_cast<double>(y)+(1.0/m)*r;
-}
-
 struct Nodo {
     float x,y;
     int indice;
@@ -219,56 +209,6 @@ public:
     Nodo& getNodo(int i){
         return nodos[i];
     }
-
-    //devuelvo el vector con los pesos de los ejes de los vecinos de k pasos de noda
-    vector<Peso> pesosVecinosDeKPasosDesdeNodo(Nodo &nodo, Nodo &b, int k){//O(k * (grado(nodo)-1), O(k*m)
-        vector<Peso> pesos, aux;
-        queue<Nodo> colaDeNodos;
-        Nodo nodoactual;
-        //pongo en cola todos los nodos que se llegan en k pasos desde nodo
-        colaDeNodos.push(nodo);
-        while(k > 1 && colaDeNodos.size()!=0){
-            nodoactual = colaDeNodos.front();
-            for(auto l : rep[nodoactual.indice]){ //O(m)+O(1)
-                if( l.adyacente!=b) {
-                    colaDeNodos.push(l.adyacente);
-                }
-            }
-            //tengo que remover el primero en haber ingresado
-            //pero antes tengo que ver sus vecinos
-            aux = pesosDeVecinosDesdeNodo(nodoactual, b);
-            for(auto p: aux) {
-                pesos.push_back(cantDespuesDeComa(p,3));
-            }
-            //elimino el primero de la cola
-            colaDeNodos.pop();
-            k--;
-        }
-        //vacio la cola
-        while(colaDeNodos.size() > 0) {
-
-            nodoactual = colaDeNodos.front();
-            aux = pesosDeVecinosDesdeNodo(nodoactual,b);
-            nodoactual = colaDeNodos.front();
-            for(auto p: aux) {
-                pesos.push_back(cantDespuesDeComa(p,3));
-            }
-            colaDeNodos.pop();
-        }
-        return pesos;
-    }
-
-    vector<Peso> pesosDeVecinosDesdeNodo(Nodo& nodo, Nodo& b) { //O(m)
-        vector<Peso> p;
-        //Aca chequeamos que los pesos que agregamos sean desde el "lado" del vecindario que NO pertenece b
-        for(auto l : rep[nodo.indice]){
-            if (not(l.adyacente==b) ) {
-                //cout <<"meto peso de: "<<nodo.x<<","<<nodo.y<<" "<<l.adyacente.x<<","<<l.adyacente.y<<" sin pertenecer a :" << b.x<<","<<b.y;
-                p.push_back(cantDespuesDeComa(l.peso,3));
-            }
-        }
-        return p;
-    }
 };
 
 class ListaIncidencia {
@@ -366,12 +306,6 @@ public:
         rep[a.indice].indice=-1; //deshabilitamos esa arista
         aristasActuales--;
         aristasTotales--;
-        /*Arista aux = rep[a.indice];
-        rep[a.indice] = rep[rep.size()-1];
-        rep[rep.size()-1] = aux;
-        rep.pop_back();
-        aristasTotales=rep.size();
-        aristasActuales--;*/
     }
     int cantidad_aristas() {
         return aristasTotales;
@@ -396,55 +330,55 @@ public:
 
 };
 
-void ListaAdyacencias::convertirAListaInc(ListaIncidencia &l) {
-        Arista ar;
-        list<AristaAd>::iterator it;
-        for (int i = 0; i < nodos.size(); ++i) {
-            it = rep[i].begin();
-            ar.desde = nodos[i];
-            while(it!=rep[i].end()){
-                ar.peso = (*it).peso;
-                ar.hasta = (*it).adyacente;
-                l.agregarArista(ar);
-                it++;
-            }
-        }
-}
+//void ListaAdyacencias::convertirAListaInc(ListaIncidencia &l) {
+//        Arista ar;
+//        list<AristaAd>::iterator it;
+//        for (int i = 0; i < nodos.size(); ++i) {
+//            it = rep[i].begin();
+//            ar.desde = nodos[i];
+//            while(it!=rep[i].end()){
+//                ar.peso = (*it).peso;
+//                ar.hasta = (*it).adyacente;
+//                l.agregarArista(ar);
+//                it++;
+//            }
+//        }
+//}
 
-void MatrizAdyacencias::convertirAListaInc(ListaIncidencia& li) {
-    Arista ar;
-    int cantAg=0;
-    for (int i = 0; i < rep.size(); ++i) {
-        for (int j = 0; j < rep[0].size(); ++j) {
-            if(rep[i][j] !=-1) {//si hay arista que los une
-                ar.peso=rep[i][j];
-                ar.desde = nodos[i];
+//void MatrizAdyacencias::convertirAListaInc(ListaIncidencia& li) {
+//    Arista ar;
+//    int cantAg=0;
+//    for (int i = 0; i < rep.size(); ++i) {
+//        for (int j = 0; j < rep[0].size(); ++j) {
+//            if(rep[i][j] !=-1) {//si hay arista que los une
+//                ar.peso=rep[i][j];
+//                ar.desde = nodos[i];
+//
+//                ar.hasta = nodos[j];
+//                ar.indice=cantAg++;
+//                li.agregarArista(ar);
+//            }
+//        }
+//    }
+//}
 
-                ar.hasta = nodos[j];
-                ar.indice=cantAg++;
-                li.agregarArista(ar);
-            }
-        }
-    }
-}
-
-void MatrizAdyacencias::convertirAListaAdy(ListaAdyacencias& la) {
-    Arista ar;
-    int cantAg=0;
-    for (int i = 0; i < (rep.size()); ++i) {
-        //cout <<i<<endl;
-        for (int j = 0; j < rep[0].size(); ++j) {
-            if(rep[i][j] !=-1) {//si hay arista que los une
-                ar.peso=rep[i][j];
-                ar.desde = nodos[i];
-                //cout <<"agreggo arista: "<<cantAg<<" "<< nodos[i].x<<","<<nodos[i].y<<"  "<< nodos[j].x<<","<<nodos[j].y<<endl;
-                ar.hasta = nodos[j];
-                ar.indice=cantAg++;
-                la.agregarArista(ar);
-            }
-        }
-    }
-}
+//void MatrizAdyacencias::convertirAListaAdy(ListaAdyacencias& la) {
+//    Arista ar;
+//    int cantAg=0;
+//    for (int i = 0; i < (rep.size()); ++i) {
+//        //cout <<i<<endl;
+//        for (int j = 0; j < rep[0].size(); ++j) {
+//            if(rep[i][j] !=-1) {//si hay arista que los une
+//                ar.peso=rep[i][j];
+//                ar.desde = nodos[i];
+//                //cout <<"agreggo arista: "<<cantAg<<" "<< nodos[i].x<<","<<nodos[i].y<<"  "<< nodos[j].x<<","<<nodos[j].y<<endl;
+//                ar.hasta = nodos[j];
+//                ar.indice=cantAg++;
+//                la.agregarArista(ar);
+//            }
+//        }
+//    }
+//}
 
 //Acá pongo lo del Sweep
 
@@ -452,9 +386,6 @@ struct NodoPol{
     int id;
     float distacia;
     float angulo;
-
-//    float x;
-//    float y;
 
     NodoPol(){
         this->id = -1;
@@ -468,13 +399,9 @@ struct NodoPol{
         this->angulo = angulo;
     }
 
-    bool operator<(NodoPol& n){
-//        if(this->angulo < n.angulo || this->distacia < n.distacia || this->id < n.id){
-//            return true;
-//        }
-//
-//        return false;
-        return (this->angulo < n.angulo || this->distacia < n.distacia || this->id < n.id);
+    friend bool operator<(const NodoPol& n1, const NodoPol& n2){
+        //return (this->angulo < n.angulo || this->distacia < n.distacia || this->id < n.id);
+        return (n1.angulo < n2.angulo || n1.distacia < n2.distacia || n1.id < n2.id);
     }
 };
 
@@ -484,6 +411,7 @@ private:
     //Ordenado por ángulo, distancia, id
     priority_queue<NodoPol> listaCP;
     Nodo centro;
+
 public:
     ListaCordPol(){
         //Por ahora nada
@@ -501,7 +429,7 @@ public:
         float newX = n.x - centro.x;
         float newY = n.y - centro.y;
 
-        np.distacia = sqrt(pow(newX) + pow(newY));
+        np.distacia = sqrt(pow(newX, 2) + pow(newY, 2));
         np.angulo = atan2(n.y, newX) * 180 / PI;
 
         listaCP.push(np);
@@ -516,6 +444,6 @@ public:
     }
 };
 
-void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn);
+void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad);
 
 #endif // SWEEP_HPP

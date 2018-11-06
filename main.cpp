@@ -1,9 +1,15 @@
 #include <iostream>
+#include "sweep.hpp"
 
 using namespace std;
 
 int main()
 {
-    cout << "Hello world!" << endl;
+    ListaCordPol lcp;
+    vector<Nodo> vn;
+    float capacidad;
+
+    cargarDatos(lcp, vn, capacidad);
+
     return 0;
 }
