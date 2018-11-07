@@ -11,5 +11,7 @@ int main()
 
     cargarDatos(lcp, vn, capacidad);
 
+    //cout << "TERMINO LA FUNCION" << endl;
+
     return 0;
 }
