@@ -421,6 +421,10 @@ public:
         centro = n;
     }
 
+    int obtenerIndiceCentro(){
+        return centro.indice;
+    }
+
     void agregarNodo(Nodo n){
         NodoPol np;
         np.id = n.indice;
@@ -444,6 +448,10 @@ public:
     }
 };
 
+//Cargar los datos
 void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad);
+
+//Con esto hacemos el sweep
+//tipo retorno sweep();
 
 #endif // SWEEP_HPP

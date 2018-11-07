@@ -62,3 +62,27 @@
 	<fstream>
 	<sstream>
 
+1541550547 source:c:\proyectos\aedtp3cod45\main.cpp
+	<iostream>
+	"sweep.hpp"
+
+1541564493 c:\proyectos\aedtp3cod45\include\sweep.hpp
+	<iostream>
+	<vector>
+	<climits>
+	<cstring>
+	<algorithm>
+	<cmath>
+	<limits>
+	<utility>
+	<cstdio>
+	<queue>
+	<list>
+	<random>
+	<tuple>
+
+1541564435 source:c:\proyectos\aedtp3cod45\src\sweep.cpp
+	"sweep.hpp"
+	<fstream>
+	<sstream>
+

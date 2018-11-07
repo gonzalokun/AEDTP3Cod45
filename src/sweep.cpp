@@ -104,14 +104,44 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad){
             } break;
 
         case DEFINIENDO_DEMANDAS:{
+            std::stringstream ss(line);
+
+            int id;
+            float demanda;
+
+            ss >> id >> demanda;
+
+            vn[id - 1].demanda = demanda;
             } break;
 
         case DEFINIENDO_PUNTO_CENTRAL:{
+            //ESTO SOLO DEBERIA EJECUTARSE UNA VEZ
+            std::stringstream ss(line);
+
+            int id;
+
+            ss >> id;
+
+            if(id != -1){
+                lcp.setearNodoBase(vn[id - 1]);
+            }
+
             } break;
         }
     }
 
     entrada.close();
 
+    cout << "AHORA SE CARGA LA LISTA DE COORD. POLARES" << endl;
+
     //Ya esta cargado el vector
+    //Ahora cargo la lista Coord. Polares
+    for(int i = 0; i < vn.size(); i++){
+        //Agrego todos los puntos menos el de depósito, que sabemos que siempre va a estar en el camino
+        if(i + 1 != lcp.obtenerIndiceCentro()){
+            lcp.agregarNodo(vn[i]);
+        }
+    }
+
+    //Debería estar cargada la lista
 }
