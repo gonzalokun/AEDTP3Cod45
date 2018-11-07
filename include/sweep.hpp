@@ -451,7 +451,7 @@ public:
 //Cargar los datos
 void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad);
 
-//Con esto hacemos el sweep
-//tipo retorno sweep();
+//Con esto hacemos los clusters del sweep
+vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, float capacidad);
 
 #endif // SWEEP_HPP

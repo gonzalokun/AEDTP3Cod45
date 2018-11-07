@@ -147,3 +147,8 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad){
     cout << "SALI" << endl;
     //Debería estar cargada la lista
 }
+
+//Ahora hacemos el sweep
+vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, float capacidad){
+    //
+}
