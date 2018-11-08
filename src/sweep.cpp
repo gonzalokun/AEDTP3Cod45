@@ -82,10 +82,12 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad){
 
         if(line.compare("Dem") == 0){
             estado = DEFINIENDO_DEMANDAS;
+            continue;
         }
 
         if(line.compare("Dep") == 0){
             estado = DEFINIENDO_PUNTO_CENTRAL;
+            continue;
         }
 
         switch(estado){
@@ -106,12 +108,19 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad){
         case DEFINIENDO_DEMANDAS:{
             std::stringstream ss(line);
 
+            cout << "LA LINEA DE TEXTO ES " << line << endl;
+
             int id;
             float demanda;
 
             ss >> id >> demanda;
 
+            cout << "ID LEIDO ES " << id << endl;
+            cout << "DEMANDA LEIDA ES " << demanda << endl;
+
             vn[id - 1].demanda = demanda;
+
+            cout << "DEMANDA DE NODO " << id << " ES " << vn[id - 1].demanda << endl;
             } break;
 
         case DEFINIENDO_PUNTO_CENTRAL:{
@@ -122,9 +131,13 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad){
 
             ss >> id;
 
+            cout << "PUNTO CENTRAL LEIDO ES " << id << endl;
+
             if(id != -1){
                 lcp.setearNodoBase(vn[id - 1]);
             }
+
+            cout << "SE SETEO COMO PUNTO CENTRAL EL NODO CON ID " << lcp.getNodoBase().indice << endl;
 
             } break;
         }
@@ -139,16 +152,46 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad){
     for(int i = 0; i < vn.size(); i++){
         //cout << "Voy a agregar al nodo con id: " << i << endl;
         //Agrego todos los puntos menos el de depósito, que sabemos que siempre va a estar en el camino
-        if(i + 1 != lcp.obtenerIndiceCentro()){
+        if(i + 1 != lcp.getNodoBase().indice){
+            cout << "SE AGREGA A LA LISTA EL NODO CON ID: " << vn[i].indice << endl;
             lcp.agregarNodo(vn[i]);
         }
     }
 
-    cout << "SALI" << endl;
+    cout << "TERMINO LA CARGA DE DATOS" << endl;
     //Debería estar cargada la lista
 }
 
 //Ahora hacemos el sweep
-vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, float capacidad){
-    //
+vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, const vector<Nodo>& vn, float capacidad){
+    vector<vector<Nodo>> vecClusters;
+
+    float capActual = 0;
+    vector<Nodo> vecActual;
+    vecActual.push_back(lcp.getNodoBase());
+
+    int cont = 0;
+
+    while(!lcp.vacia()){
+        cout << "Ciclo: " << cont << endl;
+        cout << "Tam. Lista: " << lcp.tam() << endl;
+        if(capActual + lcp.siguiente().demanda <= capacidad){
+            cout << "ID DE NODO A AGREGAR: " << lcp.siguiente().id << endl;
+            cout << "DEMANDA DEL NODO: " << lcp.siguiente().demanda << endl;
+            capActual += lcp.siguiente().demanda;
+            vecActual.push_back(vn[lcp.siguiente().id - 1]);
+            lcp.pop();
+        }
+        else{
+            //Inserto el conjunto y reseteo las variables
+            capActual = 0;
+            vecClusters.push_back(vecActual);
+            vecActual.clear();
+            vecActual.push_back(lcp.getNodoBase());
+        }
+
+        cont++;
+    }
+
+    return vecClusters;
 }

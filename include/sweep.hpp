@@ -384,6 +384,7 @@ public:
 
 struct NodoPol{
     int id;
+    float demanda;
     float distacia;
     float angulo;
 
@@ -421,8 +422,8 @@ public:
         centro = n;
     }
 
-    int obtenerIndiceCentro(){
-        return centro.indice;
+    Nodo getNodoBase(){
+        return centro;
     }
 
     void agregarNodo(Nodo n){
@@ -435,16 +436,35 @@ public:
 
         np.distacia = sqrt(pow(newX, 2) + pow(newY, 2));
         np.angulo = atan2(n.y, newX) * 180 / PI;
+        np.demanda = n.demanda;
 
         listaCP.push(np);
     }
 
     NodoPol siguiente(){
-        listaCP.top();
+        return listaCP.top();
     }
 
     void pop(){
         listaCP.pop();
+    }
+
+    bool vacia(){
+        return listaCP.empty();
+    }
+
+    int tam(){
+        return listaCP.size();
+    }
+
+    void mostrarLista(){
+        priority_queue<NodoPol> copia = listaCP;
+
+        cout << "MOSTRANDO LOS ID DE LOS ELEMENTOS DE LA LISTA EN ORDEN: " << endl;
+        while(!copia.empty()){
+            cout << copia.top().id << endl;
+            copia.pop();
+        }
     }
 };
 
@@ -452,6 +472,6 @@ public:
 void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad);
 
 //Con esto hacemos los clusters del sweep
-vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, float capacidad);
+vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, const vector<Nodo>& vn, float capacidad);
 
 #endif // SWEEP_HPP
