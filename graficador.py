@@ -197,11 +197,12 @@ def graficarNodos(nombre):
     
     print(cantNodosCluster)
 
-    for elem in cantNodosCluster.keys:
-        color = random.choice(listacnames - colores)
+    for elem in cantNodosCluster.keys():
+        listaColores = [i for i in listacnames if (i not in colores)]
+        color = random.choice(listaColores)
 
         for i in range(cantNodosCluster[elem]):
-            colores += color
+            colores += [color]
     
     #colores.append('#FF0000')
 
