@@ -186,6 +186,7 @@ vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, const vector<Nodo>& vn, 
             //Inserto el conjunto y reseteo las variables
             capActual = 0;
             vecClusters.push_back(vecActual);
+
             vecActual.clear();
             vecActual.push_back(lcp.getNodoBase());
         }
@@ -193,5 +194,31 @@ vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, const vector<Nodo>& vn, 
         cont++;
     }
 
+    //Agrego el ultimo cluster que siempre se forma
+    vecClusters.push_back(vecActual);
+
+//    if(!vecActual.empty()){
+//        vecClusters.push_back(vecActual);
+//    }
+
     return vecClusters;
+}
+
+void generarOutput(vector<vector<Nodo>>& clusters){
+    int cantClusters = 1;
+
+    ofstream salida;
+    salida.open("output.csv");
+
+    for(int i = 0; i < clusters.size(); i++){
+        for(int j = 0 ; j < clusters[i].size(); j++){
+            salida << clusters[i][j].indice << ",";
+            salida << clusters[i][j].x << ",";
+            salida << clusters[i][j].y << ",";
+            salida << cantClusters << endl;
+        }
+        cantClusters++;
+    }
+
+    salida.close();
 }
