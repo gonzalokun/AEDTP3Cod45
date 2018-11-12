@@ -35,6 +35,7 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="include/basics3.h" />
 		<Unit filename="include/sweep.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/sweep.cpp" />
