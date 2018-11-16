@@ -58,6 +58,16 @@ int main()
 
     cout << "------------------------------" << endl;
 
+    system("pause");
+
+    cout << "RESOLVIENDO CAMINOS POR TSP" << endl;
+
+    vector<vector<Nodo>> caminosSol;
+
+    cout << "------------------------------" << endl;
+
+    system("pause");
+
     cout << "FIN DEL PROGRAMA" << endl;
 
     cout << "------------------------------" << endl;
