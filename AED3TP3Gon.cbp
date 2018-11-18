@@ -36,8 +36,12 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="include/basics3.h" />
+		<Unit filename="include/cluster.h" />
+		<Unit filename="include/siman.h" />
 		<Unit filename="include/sweep.hpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/cluster.cpp" />
+		<Unit filename="src/siman.cpp" />
 		<Unit filename="src/sweep.cpp" />
 		<Extensions>
 			<code_completion />
