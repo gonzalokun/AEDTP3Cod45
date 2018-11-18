@@ -18,7 +18,7 @@
 using namespace std;
 
 typedef float Peso;
-
+struct Nodo;
 float cantDespuesDeComa(const float& x, const int& numDecimals) {
     int y=x;
     float z=x-y;
@@ -29,10 +29,19 @@ float cantDespuesDeComa(const float& x, const int& numDecimals) {
     return static_cast<double>(y)+(1.0/m)*r;
 }
 
+float distancia_euclidea(float x1,float y1, float x2, float y2);
+void mostrar_cluster(vector<float> & demandas_cluster);
+tuple<int,  float, Nodo> min_vecino_nodo(vector<Nodo>& nodos, int indice , vector<bool>& marc);
+pair<vector<Nodo>,float> TSP(vector<Nodo> & vector_nodos, vector<Nodo> & cluster);
+void generar_output(vector<pair<int, float> >& cluster, vector<Nodo>& vector_nodos, string out);
+
+void exportar_grafo(vector<Nodo>& camino, float costo,int ruteo, string in);
+
 
 struct Nodo {
     float x,y;
     int indice;
+    float demanda;
     Nodo() : indice(-1){}
     Nodo(float x, float y, int indice) {
         this->y=y;
@@ -40,8 +49,9 @@ struct Nodo {
         this->indice=indice;
     }
     //Nodo (Nodo &n) : x(n.x), y(n.y), indice(n.indice) {}
-    bool operator==(Nodo &n) {
-        return(this->x == n.x && this->y == n.y);
+    bool operator==(const Nodo &n) const {
+        return (n.indice == this->indice);
+        //return(this->x == n.x && this->y == n.y);
     }
     bool operator!=(Nodo& n) {
         return(this->x != n.x || this->y != n.y);
@@ -51,6 +61,13 @@ struct Nodo {
         y = n.y;
         indice = n.indice;
     }*/
+    bool operator<(const Nodo& n)const{
+        if(distancia_euclidea(0,0,this->x,this->y) < distancia_euclidea(0,0,n.x,n.y)){
+            return true;
+        }else {
+            return false;
+        }
+    }
 };
 
 struct AristaAd{
@@ -134,13 +151,12 @@ public:
     void convertirAListaAdy(ListaAdyacencias& la);
 
 };
-
 class ListaIncidencia;
 class ListaAdyacencias {
 private:
     //vector< vector<Nodo> > rep;
     //vector< vector<std::pair<Nodo, Peso>> > rep;
-    vector< list< AristaAd > > rep;
+    vector<list< AristaAd> > rep;
     vector<Nodo> nodos;
 public:
     ListaAdyacencias() {}
@@ -309,16 +325,16 @@ public:
     }
     void agregarArista(Arista& a) { //pre: al iniciar la lista de incidencia, ya sabemos la cantidad de aristas.
         //if(!existeArista(a.desde,a.hasta)) {
-            if(aristasTotales > aristasActuales) {
-                a.indice = aristasActuales;
-                rep[aristasActuales] = a;
-                aristasActuales++;
-            }else{
-                a.indice = aristasActuales;
-                rep.push_back(a);
-                aristasActuales++;
-                aristasTotales++;
-            }
+        if(aristasTotales > aristasActuales) {
+            a.indice = aristasActuales;
+            rep[aristasActuales] = a;
+            aristasActuales++;
+        }else{
+            a.indice = aristasActuales;
+            rep.push_back(a);
+            aristasActuales++;
+            aristasTotales++;
+        }
     }
     Arista& getArista(int in) {
         return rep[in];
@@ -396,57 +412,56 @@ public:
 
 };
 
-void ListaAdyacencias::convertirAListaInc(ListaIncidencia &l) {
-        Arista ar;
-        list<AristaAd>::iterator it;
-        for (int i = 0; i < nodos.size(); ++i) {
-            it = rep[i].begin();
-            ar.desde = nodos[i];
-            while(it!=rep[i].end()){
-                ar.peso = (*it).peso;
-                ar.hasta = (*it).adyacente;
-                l.agregarArista(ar);
-                it++;
-            }
-        }
-}
-
-
-void MatrizAdyacencias::convertirAListaInc(ListaIncidencia& li) {
-    Arista ar;
-    int cantAg=0;
-    for (int i = 0; i < rep.size(); ++i) {
-        for (int j = 0; j < rep[0].size(); ++j) {
-            if(rep[i][j] !=-1) {//si hay arista que los une
-                ar.peso=rep[i][j];
-                ar.desde = nodos[i];
-
-                ar.hasta = nodos[j];
-                ar.indice=cantAg++;
-                li.agregarArista(ar);
-            }
-        }
-    }
-}
-
-void MatrizAdyacencias::convertirAListaAdy(ListaAdyacencias& la) {
-    Arista ar;
-    int cantAg=0;
-    for (int i = 0; i < (rep.size()); ++i) {
-        //cout <<i<<endl;
-        for (int j = 0; j < rep[0].size(); ++j) {
-            if(rep[i][j] !=-1) {//si hay arista que los une
-                ar.peso=rep[i][j];
-                ar.desde = nodos[i];
-                //cout <<"agreggo arista: "<<cantAg<<" "<< nodos[i].x<<","<<nodos[i].y<<"  "<< nodos[j].x<<","<<nodos[j].y<<endl;
-                ar.hasta = nodos[j];
-                ar.indice=cantAg++;
-                la.agregarArista(ar);
-            }
-        }
-    }
-}
-
+//void ListaAdyacencias::convertirAListaInc(ListaIncidencia &l) {
+//    Arista ar;
+//    list<AristaAd>::iterator it;
+//    for (int i = 0; i < nodos.size(); ++i) {
+//        it = rep[i].begin();
+//        ar.desde = nodos[i];
+//        while(it!=rep[i].end()){
+//            ar.peso = (*it).peso;
+//            ar.hasta = (*it).adyacente;
+//            l.agregarArista(ar);
+//            it++;
+//        }
+//    }
+//}
+//
+//
+//void MatrizAdyacencias::convertirAListaInc(ListaIncidencia& li) {
+//    Arista ar;
+//    int cantAg=0;
+//    for (int i = 0; i < rep.size(); ++i) {
+//        for (int j = 0; j < rep[0].size(); ++j) {
+//            if(rep[i][j] !=-1) {//si hay arista que los une
+//                ar.peso=rep[i][j];
+//                ar.desde = nodos[i];
+//
+//                ar.hasta = nodos[j];
+//                ar.indice=cantAg++;
+//                li.agregarArista(ar);
+//            }
+//        }
+//    }
+//}
+//
+//void MatrizAdyacencias::convertirAListaAdy(ListaAdyacencias& la) {
+//    Arista ar;
+//    int cantAg=0;
+//    for (int i = 0; i < (rep.size()); ++i) {
+//        //cout <<i<<endl;
+//        for (int j = 0; j < rep[0].size(); ++j) {
+//            if(rep[i][j] !=-1) {//si hay arista que los une
+//                ar.peso=rep[i][j];
+//                ar.desde = nodos[i];
+//                //cout <<"agreggo arista: "<<cantAg<<" "<< nodos[i].x<<","<<nodos[i].y<<"  "<< nodos[j].x<<","<<nodos[j].y<<endl;
+//                ar.hasta = nodos[j];
+//                ar.indice=cantAg++;
+//                la.agregarArista(ar);
+//            }
+//        }
+//    }
+//}
 
 template<typename T>
 float calcularMedia(vector<T>&);

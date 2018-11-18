@@ -21,6 +21,8 @@ using namespace std;
 
 typedef float Peso;
 
+float distancia_euclidea(float x1,float y1, float x2, float y2);
+
 struct Nodo {
     float x,y;
     int indice;
@@ -380,7 +382,7 @@ public:
 //    }
 //}
 
-//Acá pongo lo del Sweep
+//Acï¿½ pongo lo del Sweep
 
 struct NodoPol{
     int id;
@@ -408,8 +410,8 @@ struct NodoPol{
 
 class ListaCordPol{
 private:
-    //Guarda el id, el ángulo y la distancia de cada punto
-    //Ordenado por ángulo, distancia, id
+    //Guarda el id, el ï¿½ngulo y la distancia de cada punto
+    //Ordenado por ï¿½ngulo, distancia, id
     priority_queue<NodoPol> listaCP;
     Nodo centro;
 
@@ -430,7 +432,7 @@ public:
         NodoPol np;
         np.id = n.indice;
 
-        //Se calcula la distancia y el ángulo en base al punto del centro
+        //Se calcula la distancia y el ï¿½ngulo en base al punto del centro
         float newX = n.x - centro.x;
         float newY = n.y - centro.y;
 

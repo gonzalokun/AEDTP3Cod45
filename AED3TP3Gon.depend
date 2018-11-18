@@ -38,15 +38,15 @@
 	<list>
 	<random>
 
-1542045656 source:e:\proyectos\aedtp3cod45\main.cpp
+1542570486 source:e:\proyectos\aedtp3cod45\main.cpp
 	<iostream>
-	"sweep.hpp"
+	"include/sweep.hpp"
 
-1542030248 e:\proyectos\aedtp3cod45\include\sweep.hpp
+1542569193 e:\proyectos\aedtp3cod45\include\sweep.hpp
 	"basics3.h"
 
-1542045805 source:e:\proyectos\aedtp3cod45\src\sweep.cpp
-	"sweep.hpp"
+1542570539 source:e:\proyectos\aedtp3cod45\src\sweep.cpp
+	"../include/sweep.hpp"
 	<fstream>
 	<sstream>
 
@@ -88,4 +88,29 @@
 	<list>
 	<random>
 	<tuple>
+
+1542570568 source:e:\proyectos\aedtp3cod45\src\siman.cpp
+	"../include/siman.h"
+
+1542396256 e:\proyectos\aedtp3cod45\include\siman.h
+	"basics3.h"
+
+1541380455 source:e:\proyectos\aedtp3cod45\src\cluster.cpp
+	"cluster.h"
+	<fstream>
+	<chrono>
+
+1542569344 e:\proyectos\aedtp3cod45\include\cluster.h
+	<iostream>
+	<vector>
+	<climits>
+	<cstring>
+	<algorithm>
+	<cmath>
+	<limits>
+	<utility>
+	<cstdio>
+	<queue>
+	<list>
+	<random>
 

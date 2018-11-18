@@ -17,7 +17,7 @@ for linea in entrada:
         salida.write("Dem\n")
     elif separada[0] == "DEPOT_SECTION \n":
         salida.write("Dep\n")
-    elif separada[0] in ['NAME', 'COMMENT', 'TYPE', 'EDGE_WEIGHT_TYPE', 'NODE_COORD_SECTION \n', 'EOF\n']:
+    elif separada[0] in ['NAME', 'COMMENT', 'TYPE', 'EDGE_WEIGHT_TYPE', 'NODE_COORD_SECTION \n', 'EOF \n']:
         continue
     else:
         salida.write(separada[0])
