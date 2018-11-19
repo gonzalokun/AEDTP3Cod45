@@ -1,0 +1,9 @@
+Para hacer el Simulated Annealing:
+Tenemos:
+	El costo total T
+	Los caminos
+
+C depende de los caminos, ya que es la suma de los costos de los caminos.
+Entonces para obtener el minimo T tengo que minimizar los caminos.
+
+Por lo tanto, para poder minimizar T aplicamos SimAn a los caminos y recalculamos el nuevo costo total T'.
