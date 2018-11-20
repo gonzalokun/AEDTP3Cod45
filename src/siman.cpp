@@ -1,4 +1,6 @@
 #include "../include/siman.hpp"
+#include <time.h>
+#include <math.h>
 
 //Dependiendo el modo se devuelven distintos vecindarios
 //Valores de vecindarios:
@@ -22,8 +24,34 @@ solucionProb simulatedAnnealingGeneral(solucionProb& solucionInicial, int modo, 
 vector<Nodo> simulatedAnnealingCamino(vector<Nodo>& caminoInicial, int modo, float temperaturaMax, float temperaturaMin, float coefEnfriamiento){
     float tempActual = temperaturaMax;
     vector<Nodo> caminoSol = caminoInicial;
+    vector<Nodo> caminoActual = caminoInicial;
 
     while(tempActual >= temperaturaMin){
+        vector<vector<Nodo>> vecindario = generarVecindario(caminoActual, modo);
+
+        //Elige al azar un indice
+        std::random_device seed;
+        //std::mt19937 engine(seed());
+        std::default_random_engine generator;
+        generator.seed(seed());
+        std::uniform_int_distribution<int> choose(0, vecindario.size()-1);
+
+        vector<Nodo> solTentativa = vecindario[choose(generator)];
+
+        //Calculo la probabilidad de pasar a esta solucion
+        srand (time(NULL));
+
+        float r = (float) rand()/RAND_MAX;
+        float prob = exp((-(calcularCostoCamino(solTentativa) - calcularCostoCamino(caminoActual)) / tempActual));
+
+        if(prob >= r){
+            caminoActual = solTentativa;
+        }
+
+        if(calcularCostoCamino(caminoActual) < calcularCostoCamino(caminoSol)){
+            caminoSol = caminoActual;
+        }
+
         tempActual -= coefEnfriamiento;
     }
 
