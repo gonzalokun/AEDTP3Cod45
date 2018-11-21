@@ -1,5 +1,7 @@
 #include <iostream>
 #include "include/sweep.hpp"
+#include "include/siman.hpp"
+#include <time.h>
 
 using namespace std;
 
@@ -9,6 +11,8 @@ int main()
     vector<Nodo> vn;
     float capacidad;
     vector<vector<Nodo>> clusters;
+
+    srand(time(NULL));
 
     cargarDatos(lcp, vn, capacidad);
 
@@ -93,6 +97,34 @@ int main()
         cout << "CAMINO " << i << ": [";
         for (int j = 0; j < caminosSol[i].size(); j++) {
             cout << caminosSol[i][j].indice << ((j == caminosSol[i].size() - 1)? ("]") : (", "));
+        }
+        cout << endl;
+    }
+
+    cout << "------------------------------" << endl;
+
+    system("pause");
+
+    cout << "APLICANDO SIMAN A LA SOLUCION PARA VER SI MEJORA" << endl;
+
+    solucionProb solActual(caminosSol);
+
+    cout << "EL COSTO DE LA SOL ANTES DE SIMAN: " << solActual.getCostoSol() << endl;
+
+    system("pause");
+
+    solActual = simulatedAnnealingGeneral(solActual, VECINDARIO_INTERCHANGE, 10000, 50, 20);
+
+    cout << "EL COSTO DE LA SOL DESPUES DE SIMAN: " << solActual.getCostoSol() << endl;
+
+    cout << "------------------------------" << endl;
+
+    cout << "SOLUCION DEL SIMAN" << endl;
+
+    for(int i = 0; i < solActual.getCaminos().size(); i++) {
+        cout << "CAMINO " << i << ": [";
+        for (int j = 0; j < solActual.getCaminos()[i].size(); j++) {
+            cout << solActual.getCaminos()[i][j].indice << ((j == solActual.getCaminos()[i].size() - 1)? ("]") : (", "));
         }
         cout << endl;
     }

@@ -121,10 +121,12 @@ cnames = {
 'turquoise':            '#40E0D0',
 'violet':               '#EE82EE',
 'wheat':                '#F5DEB3',
-'white':                '#FFFFFF',
-'whitesmoke':           '#F5F5F5',
 'yellow':               '#FFFF00',
 'yellowgreen':          '#9ACD32'}
+
+#Estos no se pueden ver en el graficador
+#'white':                '#FFFFFF',
+#'whitesmoke':           '#F5F5F5',
 
 def graficarGrafo(nombre):
     G = nx.Graph()

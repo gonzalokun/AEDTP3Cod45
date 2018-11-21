@@ -437,7 +437,8 @@ public:
         float newY = n.y - centro.y;
 
         np.distacia = sqrt(pow(newX, 2) + pow(newY, 2));
-        np.angulo = atan2(n.y, newX) * 180 / PI;
+        //np.angulo = atan2(n.y, newX) * 180 / PI;
+        np.angulo = atan2(newY, newX) * 180 / PI;
         np.demanda = n.demanda;
 
         listaCP.push(np);
