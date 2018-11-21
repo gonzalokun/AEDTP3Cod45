@@ -66,16 +66,20 @@ vector<Nodo> simulatedAnnealingCamino(vector<Nodo>& caminoInicial, int modo, flo
         float energiaEstadoActual = calcularCostoCamino(caminoActual);
         float energiaNuevoEstado = calcularCostoCamino(solTentativa);
 
-        if(energiaEstadoActual < energiaNuevoEstado){
+        if(energiaNuevoEstado < energiaEstadoActual){
             prob = 1.0;
         }
         else{
-            prob = exp((-(energiaNuevoEstado - energiaEstadoActual) / tempActual));
+            //prob = exp(((energiaEstadoActual - energiaNuevoEstado) / tempActual));
+            prob = exp(-((energiaNuevoEstado - energiaEstadoActual) / tempActual));
         }
 
         if(prob >= r){
-            cout << "VALOR r: " << r << "\n";
-            cout << "VALOR prob: " << prob << "\n";
+            //cout << "VALOR r: " << r << "\n";
+            //cout << "VALOR prob: " << prob << "\n";
+            //cout << "energiaEstadoActual: " << energiaEstadoActual << "\n";
+            //cout << "energiaNuevoEstado: " << energiaNuevoEstado << "\n";
+            //cout << "----------------------------------------" << "\n";
             cantSaltos++;
             caminoActual = solTentativa;
         }
