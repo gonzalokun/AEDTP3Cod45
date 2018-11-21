@@ -28,13 +28,13 @@ int main()
 
     cout << "------------------------------" << endl;
 
-    system("pause");
+    //system("pause");
 
     cout << "SE CARGARON TODOS LOS DATOS" << endl;
 
     clusters = generarClusters(lcp, vn, capacidad);
 
-    system("pause");
+    //system("pause");
 
     cout << "------------------------------" << endl;
 
@@ -52,7 +52,7 @@ int main()
         cout << "]" << endl;
     }
 
-    system("pause");
+    //system("pause");
 
     cout << "------------------------------" << endl;
 
@@ -62,7 +62,7 @@ int main()
 
     cout << "------------------------------" << endl;
 
-    system("pause");
+    //system("pause");
 
     cout << "RESOLVIENDO CAMINOS POR TSP (Sin GRASP)" << endl;
 
@@ -89,7 +89,7 @@ int main()
 
     cout << "------------------------------" << endl;
 
-    system("pause");
+    //system("pause");
 
     cout << "MOSTRANDO CAMINOS" << endl;
 
@@ -103,19 +103,21 @@ int main()
 
     cout << "------------------------------" << endl;
 
-    system("pause");
+    //system("pause");
 
     cout << "APLICANDO SIMAN A LA SOLUCION PARA VER SI MEJORA" << endl;
 
-    solucionProb solActual(caminosSol);
+    solucionProb solActual(capacidad, caminosSol);
 
     cout << "EL COSTO DE LA SOL ANTES DE SIMAN: " << solActual.getCostoSol() << endl;
 
     system("pause");
 
-    solActual = simulatedAnnealingGeneral(solActual, VECINDARIO_INTERCHANGE, 10000, 50, 20);
+    solucionProb solSWAP = simulatedAnnealingGeneral(solActual, VECINDARIO_SWAP, 10000, 1, 5);
+    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 10000, 1, 5);
 
-    cout << "EL COSTO DE LA SOL DESPUES DE SIMAN: " << solActual.getCostoSol() << endl;
+    cout << "EL COSTO DE LA SOL DESPUES DE SIMAN (SWAP): " << solSWAP.getCostoSol() << "\n";
+    cout << "EL COSTO DE LA SOL DESPUES DE SIMAN (EXCHANGE): " << solEXCHANGE.getCostoSol() << "\n";
 
     cout << "------------------------------" << endl;
 

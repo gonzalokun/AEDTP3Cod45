@@ -5,6 +5,7 @@
 
 #define VECINDARIO_SWAP 0
 #define VECINDARIO_INTERCHANGE 1
+#define VECINDARIO_EXCHANGE 2
 
 float calcularCostoCamino(vector<Nodo>& camino);
 
@@ -12,6 +13,7 @@ float calcularCostoCamino(vector<Nodo>& camino);
 class solucionProb{
 private:
     float costoTotal;
+    float capacidad;
     vector<vector<Nodo>> caminos;
 
     void calcularCosto(){
@@ -26,18 +28,21 @@ private:
 
 public:
 
-    solucionProb(float costoTotal, vector<vector<Nodo>> caminos){
+    solucionProb(float costoTotal, float capacidad, vector<vector<Nodo>> caminos){
         this->costoTotal = costoTotal;
+        this->capacidad = capacidad;
         this->caminos = caminos;
     }
 
-    solucionProb(vector<vector<Nodo>> caminos){
+    solucionProb(float capacidad, vector<vector<Nodo>> caminos){
+        this->capacidad = capacidad;
         this->caminos = caminos;
         calcularCosto();
     }
 
     solucionProb(const solucionProb& sp){
         this->costoTotal = sp.getCostoSol();
+        this->capacidad = sp.getCapacidad();
         this->caminos = sp.getCaminos();
     }
 
@@ -45,8 +50,19 @@ public:
         return costoTotal;
     }
 
+    float getCapacidad() const{
+        return capacidad;
+    }
+
     vector<vector<Nodo>> getCaminos() const{
         return caminos;
+    }
+
+    solucionProb operator=(const solucionProb& sp){
+        this->costoTotal = sp.getCostoSol();
+        this->capacidad = sp.getCapacidad();
+        this->caminos = sp.getCaminos();
+        return *this;
     }
 };
 
@@ -54,10 +70,16 @@ solucionProb simulatedAnnealingGeneral(solucionProb& solucionInicial, int modo, 
 
 vector<Nodo> simulatedAnnealingCamino(vector<Nodo>& caminoInicial, int modo, float temperaturaMax, float temperaturaMin, float coefEnfriamiento);
 
+solucionProb simulatedAnnealingExhcange(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento);
+
 vector<vector<Nodo>> generarVecindario(vector<Nodo>& base, int modo);
 
 vector<vector<Nodo>> generarVecindarioSWAP(vector<Nodo>& base);
 
 vector<vector<Nodo>> generarVecindarioINTERCHANGE(vector<Nodo>& base);
+
+vector<solucionProb> generarVecindarioEXCHANGE(solucionProb& base);
+
+bool capacidadAlcanza(float capacidad, vector<Nodo> camino);
 
 #endif // SIMAN_H

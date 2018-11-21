@@ -36,6 +36,20 @@ struct Nodo {
         this->indice = indice;
     }
 
+    Nodo(const Nodo& n){
+        this->x = n.x;
+        this->y = n.y;
+        this->indice = n.indice;
+        this->demanda = n.demanda;
+    }
+
+    Nodo& operator=(const Nodo& n){
+        this->x = n.x;
+        this->y = n.y;
+        this->indice = n.indice;
+        this->demanda = n.demanda;
+    }
+
     //Nodo (Nodo &n) : x(n.x), y(n.y), indice(n.indice) {}
     bool operator==(Nodo &n) {
         return(this->x == n.x && this->y == n.y);

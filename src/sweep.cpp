@@ -208,6 +208,71 @@ vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, const vector<Nodo>& vn, 
 
 //TSP
 
+//vector<Nodo> tsp2(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, float p, float MAX_X, float MAX_Y){
+//    vector<Nodo> camino;
+//    //contiene los nodos del cluster
+//    vector<vector<float> > distancias_entre_nodos;
+//    vector<bool> visitados(nodos.size(),false);
+//    distancias_entre_nodos.resize(nodos.size());
+//
+//    std::mt19937 rng;
+//    rng.seed(std::random_device()());
+//    std::uniform_int_distribution<std::mt19937::result_type> proba_p(0,1);
+//
+//    for (int i = 0; i < nodos.size(); i++) {
+//        distancias_entre_nodos[i].resize(nodos.size());
+//        for (int j = 0; j < nodos.size(); ++j) {
+//            if(i!=j)
+//                distancias_entre_nodos[i][j] = distancia_euclidea(nodos[i].x,nodos[i].y,nodos[j].x,nodos[j].y);
+//            else
+//                distancias_entre_nodos[i][j] = MAX_Y * MAX_X;
+//        }
+//    }
+//
+//    bool hay_nodos = true;
+//    int act = nodo_comienzo;
+//    int posible_nodo = -1;
+//    camino.push_back(nodos[nodo_comienzo]);
+//    while(hay_nodos){
+//        visitados[act] = true;
+//        float minDist = MAX_X*MAX_Y;
+//        int posMin = -1;
+//        for (int i = 0; i < nodos.size(); ++i) {
+//            if(i!= act && visitados[i]==false){
+//                posible_nodo = i;
+//            }
+//            if( i!= act && visitados[i]==false && minDist > distancias_entre_nodos[act][i] && proba_p(rng)<=p){
+//                if(proba_p(rng) <= p) {
+//                    minDist = distancias_entre_nodos[act][i];
+//                    posMin = i;
+//                }else{
+//                    if(posible_nodo == -1) { //significa que no hay todavia no no visitado al que pueda ir, entonces decido ir al minimo (porque a priori no tengo otra pc)
+//                        minDist = distancias_entre_nodos[act][i];
+//                        posMin = i;
+//                    }else {
+//                        minDist = distancias_entre_nodos[act][posible_nodo];
+//                        posMin = posible_nodo;
+//                    }
+//                }
+//
+//            }
+//        }
+//        if(posMin == -1) { //Significa que no hay mas que visitar
+//            hay_nodos= false;
+//            costo_viaje += distancias_entre_nodos[act][nodo_comienzo];
+//            //cout <<"Agrego trayecto de "<< nodos[act].indice<<" a "<< nodos[0].indice<<endl;
+//            camino.push_back(nodos[nodo_comienzo]);
+//        }else{
+//            //cout <<"Agrego trayecto de "<< nodos[act].indice<<" a "<< nodos[posMin].indice<<endl;
+//            camino.push_back(nodos[posMin]);
+//            costo_viaje+=minDist;
+//            act = posMin;
+//        }
+//    }
+//    return camino;
+//}
+//
+
 vector<Nodo> tsp2(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, float p, float MAX_X, float MAX_Y){
     vector<Nodo> camino;
     //contiene los nodos del cluster
@@ -225,7 +290,7 @@ vector<Nodo> tsp2(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, fl
             if(i!=j)
                 distancias_entre_nodos[i][j] = distancia_euclidea(nodos[i].x,nodos[i].y,nodos[j].x,nodos[j].y);
             else
-                distancias_entre_nodos[i][j] = MAX_Y * MAX_X;
+                distancias_entre_nodos[i][j] = MAX_Y*MAX_X;
         }
     }
 
@@ -237,25 +302,19 @@ vector<Nodo> tsp2(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, fl
         visitados[act] = true;
         float minDist = MAX_X*MAX_Y;
         int posMin = -1;
+        posible_nodo = -1;
         for (int i = 0; i < nodos.size(); ++i) {
             if(i!= act && visitados[i]==false){
                 posible_nodo = i;
             }
-            if( i!= act && visitados[i]==false && minDist > distancias_entre_nodos[act][i] && proba_p(rng)<=p){
-                if(proba_p(rng) <= p) {
-                    minDist = distancias_entre_nodos[act][i];
-                    posMin = i;
-                }else{
-                    if(posible_nodo == -1) { //significa que no hay todavia no no visitado al que pueda ir, entonces decido ir al minimo (porque a priori no tengo otra pc)
-                        minDist = distancias_entre_nodos[act][i];
-                        posMin = i;
-                    }else {
-                        minDist = distancias_entre_nodos[act][posible_nodo];
-                        posMin = posible_nodo;
-                    }
-                }
-
+            if( i!= act && visitados[i]==false && minDist > distancias_entre_nodos[act][i]){
+                minDist = distancias_entre_nodos[act][i];
+                posMin = i;
             }
+        }
+        if(proba_p(rng) > p && posible_nodo!=-1) { //si ademas de tener que agarrar un vertice aleat se que existe (podrian estar todos visitados)
+            posMin = posible_nodo;
+            minDist = distancias_entre_nodos[act][posible_nodo];
         }
         if(posMin == -1) { //Significa que no hay mas que visitar
             hay_nodos= false;
@@ -275,13 +334,12 @@ vector<Nodo> tsp2(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, fl
 vector<Nodo> tsp_con_grasp(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, float p, float MAX_X, float MAX_Y) {
     //Genero solucion con heuristica golosa
     float costo_sol_golosa=0, costo_aux = 0, costo_min;
-    vector<Nodo> sol = tsp2(nodos,nodo_comienzo,costo_sol_golosa,1, MAX_X, MAX_Y);
+    vector<Nodo> sol = tsp2(nodos,nodo_comienzo,costo_sol_golosa,1,MAX_X, MAX_Y);
     costo_min = costo_sol_golosa;
     vector<Nodo> aux;
-    float p_shift = 0.3;
-    while (p>=0){
+    float p_shift = 0.1;
+    while (p>=0.5){
         aux = tsp2(nodos,nodo_comienzo,costo_aux,p,MAX_X, MAX_Y);
-        cout <<"Nueva sol es de :"<<costo_aux<<endl;
         if(costo_aux < costo_sol_golosa){
             sol = aux;
             costo_min = costo_aux;
