@@ -121,12 +121,24 @@ int main()
 
     cout << "------------------------------" << endl;
 
-    cout << "SOLUCION DEL SIMAN" << endl;
+    cout << "SOLUCION DEL SIMAN (SWAP)" << endl;
 
-    for(int i = 0; i < solActual.getCaminos().size(); i++) {
+    for(int i = 0; i < solSWAP.getCaminos().size(); i++) {
         cout << "CAMINO " << i << ": [";
-        for (int j = 0; j < solActual.getCaminos()[i].size(); j++) {
-            cout << solActual.getCaminos()[i][j].indice << ((j == solActual.getCaminos()[i].size() - 1)? ("]") : (", "));
+        for (int j = 0; j < solSWAP.getCaminos()[i].size(); j++) {
+            cout << solSWAP.getCaminos()[i][j].indice << ((j == solSWAP.getCaminos()[i].size() - 1)? ("]") : (", "));
+        }
+        cout << endl;
+    }
+
+    cout << "------------------------------" << endl;
+
+    cout << "SOLUCION DEL SIMAN (EXCHANGE)" << endl;
+
+    for(int i = 0; i < solEXCHANGE.getCaminos().size(); i++) {
+        cout << "CAMINO " << i << ": [";
+        for (int j = 0; j < solEXCHANGE.getCaminos()[i].size(); j++) {
+            cout << solEXCHANGE.getCaminos()[i][j].indice << ((j == solEXCHANGE.getCaminos()[i].size() - 1)? ("]") : (", "));
         }
         cout << endl;
     }
