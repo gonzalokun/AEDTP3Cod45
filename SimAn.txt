@@ -7,3 +7,11 @@ C depende de los caminos, ya que es la suma de los costos de los caminos.
 Entonces para obtener el minimo T tengo que minimizar los caminos.
 
 Por lo tanto, para poder minimizar T aplicamos SimAn a los caminos y recalculamos el nuevo costo total T'.
+
+^^ ESTO NO SE CUMPLE SIEMPRE!!!!!
+
+--LO QUE FALTA--
+
+INVENTARSE UN MEJOR CASO DE SWEEP Y DE SIMAN
+
+AGARRAR CASOS DE LOS DE DIEGO O LA PAGINA Y HACER GRAFICOS CON TIEMPOS O COSAS POR EL ESTILO

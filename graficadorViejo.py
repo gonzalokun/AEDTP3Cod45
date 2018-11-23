@@ -4,10 +4,14 @@ import csv
 from numpy import loadtxt
 import matplotlib.pyplot as plt
 import pylab
-import sys
+import random
 
 cnames = {
-#'black':                '#000000', lo saco para usar de deposito
+'aquamarine':           '#7FFFD4',
+'azure':                '#F0FFFF',
+'beige':                '#F5F5DC',
+'bisque':               '#FFE4C4',
+'black':                '#000000',
 'blanchedalmond':       '#FFEBCD',
 'blue':                 '#0000FF',
 'blueviolet':           '#8A2BE2',
@@ -117,32 +121,49 @@ cnames = {
 'turquoise':            '#40E0D0',
 'violet':               '#EE82EE',
 'wheat':                '#F5DEB3',
-'white':                '#FFFFFF',
-'whitesmoke':           '#F5F5F5',
 'yellow':               '#FFFF00',
 'yellowgreen':          '#9ACD32'}
 
-def graficarGrafo(nombre,nombre_completo, col):
+#Estos no se pueden ver en el graficador
+#'white':                '#FFFFFF',
+#'whitesmoke':           '#F5F5F5',
+
+def graficarGrafo(nombre):
     G = nx.Graph()
-    path = "salida/"+nombre +"/"+nombre_completo +".csv"
+    path = 'grafos/' + nombre + ".csv"
     f = plt.figure(nombre)
     with open(path) as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in spamreader:
-            if(len(row) == 3):
-                G.add_node(int(row[0]),pos=(float(row[1]),float(row[2])))
-            elif(len(row) == 2):
-                #G.add_edge(int(row[0]),int(row[1]))
-                G.add_edge(int(row[0]),int(row[1]))
-            else:
-                costo_tour = row[0]
-            pos=nx.get_node_attributes(G,'pos')
-    nx.draw_networkx(G,pos, edge_color=col, node_size=10)#edge_color=colors)
+            #print(n)
+            G.add_edge(row[0], row[1], weight=row[2])
+    pos = nx.spring_layout(G)
+
+    #print(list(G.edges()))
+    edge_weights = {(u,v):d['weight'] for u,v,d in G.edges(data=True)}
+    #nx.draw(G, pos = pos, with_labels=True)
+    # nodes
+    #nx.draw_networkx_nodes(G, pos, node_size=1)
+    #edge
+
+    #colors = range(20)
+    #plt.axis([0,10000,0,10000])
+    nx.draw(G, pos,node_color='r',
+        width=0.5, edge_cmap=plt.cm.Blues, with_labels=True)
+
+    #nx.draw_networkx_edges(G,pos,edges=ejes,width=1, alpha=0.0)# edge_color='g', style='dashed')
+    nx.draw_networkx_edge_labels(G,pos,font_size=1,edge_labels=edge_weights)
+
+    #nx.draw(G, pos = pos, with_labels=True)
+    #nx.draw_networkx_edge_labels(G, pos)
+    #nx.draw(G, with_labels=True)
+    #plt.draw()
+
 
 
 def graficarNodos(nombre):
     G = nx.Graph()
-    path = "salida/"+ nombre +"/"+ nombre + ".csv"
+    path = 'grafos/' + nombre + ".csv"
     f = plt.figure(nombre)
     lista = []
     fixed_positions = {}
@@ -150,56 +171,59 @@ def graficarNodos(nombre):
     with open(path) as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in spamreader:
-            fixed_positions[row[0]] = (float(row[1]),float(row[2]) )
+            #row0 = indice, row1=posx, row2=posy, row3=clusterpertenece
+            lista = lista + row
+            fixed_positions[row[0]] = (float(row[1]),float(row[2]))
             dic_colores[row[3]] = str(row[3])
-            G.add_node(row[0], cluster=row[3], pos=(row[1],row[2]))
+            G.add_node(row[0],cluster=row[3] ,pos=(row[1],row[2]))
+        #G.add_nodes_from(lista)
     fixed_nodes = fixed_positions.keys()
-
     #necesito lista de g.nodes.size pposiciones con los dic_colores
     colores = []
     listacnames=[]
-    #print(len(list(G.nodes())))
-    for i in cnames.keys() :
-        listacnames += [cnames[i]]
-    largo = int(len(listacnames))
-    #print(largo)
-    #   print(list(G.nodes()))
-    print("\n\n")
-    #print(list(G.nodes(data=True)))
-    for i in G.nodes(data='cluster'):
-        #print("Nodo: " + i[0] + " cluster: " + i[1] )
+    for i in ((cnames.keys()) ):
+        listacnames += [(cnames[i])]
 
-        colores += [listacnames[(int(dic_colores[i[1]])+1) % largo] ]
-        if(int(i[0]) == 1 ): # si es el deposito
-            colores[(len(colores)-1)] = '#000000'
-        #colores += [listacnames[(int(dic_colores[(G.node[str(i)]['cluster'])] ) ) % largo]]
+    print(G.nodes())
 
-    #colores[0] = '#000000'
+    cantNodosCluster = {}
+
+    for i in range (len(list(G.nodes()))):
+        #print("VALOR DE I: " + str(i))
+        #colores += [listacnames[int(2 + int(dic_colores[G.node[str(i+1)]['cluster']])) % (len(listacnames))]]
+        print(str(G.node[str(i+1)]['cluster']))
+        if str(G.node[str(i+1)]['cluster']) not in cantNodosCluster.keys():
+            cantNodosCluster[str(G.node[str(i+1)]['cluster'])] = 1
+        else:
+            cantNodosCluster[str(G.node[str(i+1)]['cluster'])] += 1
+    
+    print(cantNodosCluster)
+
+    for elem in cantNodosCluster.keys():
+        listaColores = [i for i in listacnames if (i not in colores)]
+        color = random.choice(listaColores)
+
+        for i in range(cantNodosCluster[elem]):
+            colores += [color]
+    
+    #colores.append('#FF0000')
+
+    print(dic_colores)
+    #print(len(dic_colores.keys()))
+
     pos = nx.spring_layout(G,pos=fixed_positions, fixed = fixed_nodes)
-    nx.draw_networkx(G,pos,node_color=colores,node_size=45, with_labels=True)
-
-    print("Cantidad de clusters" , len(dic_colores)-1)
+    nx.draw_networkx_nodes(G,pos,node_color=colores,node_size=7)
+    #pos = nx.get_node_attributes(G,'pos')
+    #pos = nx.spring_layout(G)
+    #nx.draw(G,pos,with_labels=True)
+    #nx.draw_networkx_nodes(G,pos=pos,with_labels='True')
+    #nx.draw(G, pos=pos, with_labels=True, node_size=35)
 
 
 def main():
-    
-    print ("Corriendo ", sys.argv[0])
-    listacnames=[]
-    for i in cnames.keys() :
-        listacnames += [cnames[i]]
-    if(len(sys.argv) < 2 or len(sys.argv) >2):
-        print("Error, faltan o sobran parametros")
-    else:
-        nombre = str(sys.argv[1])
-        nombre_archivo = nombre
-        #nombre_archivo = "M-n101-k10"
-        graficarNodos(nombre_archivo)
-        plt.show()
-            #graficarGrafo(nombre_archivo,nombre_archivo+"-ruteo"+str(i), cnames[i])
-            #plt.show()
-        for i in range(6):
-            graficarGrafo(nombre_archivo, nombre_archivo+"-ruteo"+str(i), listacnames[5+i])
-        plt.show()
-
+    graficarNodos("output")
+    #graficarNodos("nodosP")
+    #graficarNodos("nodosKClust")
+    plt.show()
 
 main()

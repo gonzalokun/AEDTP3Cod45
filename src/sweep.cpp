@@ -74,21 +74,29 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad){
 
     std::string line;
     int estado = LEYENDO_PUNTOS; //0 - ingreso puntos, 1 - ingreso demandas, 2 - ingreso punto central
+    int cont = 0;
+    bool noSeteado = true;
 
     while(std::getline(entrada, line)){
         //Esto es para asegurar que la primera linea leida no sea vacia
+
         if(line.compare("") == 0)
             continue;
 
-        if(line.compare("Dem") == 0){
+        if(line.compare("Dem") == 0 || cont > tam){
             estado = DEFINIENDO_DEMANDAS;
+            cout << "CONT: " << cont << "\n";
+            cont = 0;
             continue;
         }
 
-        if(line.compare("Dep") == 0){
+        if(line.compare("Dep") == 0 || cont > tam){
             estado = DEFINIENDO_PUNTO_CENTRAL;
+            cont = 0;
             continue;
         }
+
+        cont++;
 
         switch(estado){
         case LEYENDO_PUNTOS: {
@@ -141,11 +149,17 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad){
 
             cout << "SE SETEO COMO PUNTO CENTRAL EL NODO CON ID " << lcp.getNodoBase().indice << endl;
 
+            noSeteado = false;
+
             } break;
         }
     }
 
     entrada.close();
+
+    if(noSeteado){
+        lcp.setearNodoBase(vn[0]);
+    }
 
     cout << "AHORA SE CARGA LA LISTA DE COORD. POLARES" << endl;
 
@@ -172,14 +186,14 @@ vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, const vector<Nodo>& vn, 
     vector<Nodo> vecActual;
     vecActual.push_back(lcp.getNodoBase());
 
-    int cont = 0;
+    //int cont = 0;
 
     while(!lcp.vacia()){
-        cout << "Ciclo: " << cont << endl;
-        cout << "Tam. Lista: " << lcp.tam() << endl;
+        //cout << "Ciclo: " << cont << endl;
+        //cout << "Tam. Lista: " << lcp.tam() << endl;
         if(capActual + lcp.siguiente().demanda <= capacidad){
-            cout << "ID DE NODO A AGREGAR: " << lcp.siguiente().id << endl;
-            cout << "DEMANDA DEL NODO: " << lcp.siguiente().demanda << endl;
+            //cout << "ID DE NODO A AGREGAR: " << lcp.siguiente().id << endl;
+            //cout << "DEMANDA DEL NODO: " << lcp.siguiente().demanda << endl;
             capActual += lcp.siguiente().demanda;
             vecActual.push_back(vn[lcp.siguiente().id - 1]);
             lcp.pop();
@@ -193,85 +207,16 @@ vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, const vector<Nodo>& vn, 
             vecActual.push_back(lcp.getNodoBase());
         }
 
-        cont++;
+        //cont++;
     }
 
     //Agrego el ultimo cluster que siempre se forma
     vecClusters.push_back(vecActual);
 
-//    if(!vecActual.empty()){
-//        vecClusters.push_back(vecActual);
-//    }
-
     return vecClusters;
 }
 
 //TSP
-
-//vector<Nodo> tsp2(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, float p, float MAX_X, float MAX_Y){
-//    vector<Nodo> camino;
-//    //contiene los nodos del cluster
-//    vector<vector<float> > distancias_entre_nodos;
-//    vector<bool> visitados(nodos.size(),false);
-//    distancias_entre_nodos.resize(nodos.size());
-//
-//    std::mt19937 rng;
-//    rng.seed(std::random_device()());
-//    std::uniform_int_distribution<std::mt19937::result_type> proba_p(0,1);
-//
-//    for (int i = 0; i < nodos.size(); i++) {
-//        distancias_entre_nodos[i].resize(nodos.size());
-//        for (int j = 0; j < nodos.size(); ++j) {
-//            if(i!=j)
-//                distancias_entre_nodos[i][j] = distancia_euclidea(nodos[i].x,nodos[i].y,nodos[j].x,nodos[j].y);
-//            else
-//                distancias_entre_nodos[i][j] = MAX_Y * MAX_X;
-//        }
-//    }
-//
-//    bool hay_nodos = true;
-//    int act = nodo_comienzo;
-//    int posible_nodo = -1;
-//    camino.push_back(nodos[nodo_comienzo]);
-//    while(hay_nodos){
-//        visitados[act] = true;
-//        float minDist = MAX_X*MAX_Y;
-//        int posMin = -1;
-//        for (int i = 0; i < nodos.size(); ++i) {
-//            if(i!= act && visitados[i]==false){
-//                posible_nodo = i;
-//            }
-//            if( i!= act && visitados[i]==false && minDist > distancias_entre_nodos[act][i] && proba_p(rng)<=p){
-//                if(proba_p(rng) <= p) {
-//                    minDist = distancias_entre_nodos[act][i];
-//                    posMin = i;
-//                }else{
-//                    if(posible_nodo == -1) { //significa que no hay todavia no no visitado al que pueda ir, entonces decido ir al minimo (porque a priori no tengo otra pc)
-//                        minDist = distancias_entre_nodos[act][i];
-//                        posMin = i;
-//                    }else {
-//                        minDist = distancias_entre_nodos[act][posible_nodo];
-//                        posMin = posible_nodo;
-//                    }
-//                }
-//
-//            }
-//        }
-//        if(posMin == -1) { //Significa que no hay mas que visitar
-//            hay_nodos= false;
-//            costo_viaje += distancias_entre_nodos[act][nodo_comienzo];
-//            //cout <<"Agrego trayecto de "<< nodos[act].indice<<" a "<< nodos[0].indice<<endl;
-//            camino.push_back(nodos[nodo_comienzo]);
-//        }else{
-//            //cout <<"Agrego trayecto de "<< nodos[act].indice<<" a "<< nodos[posMin].indice<<endl;
-//            camino.push_back(nodos[posMin]);
-//            costo_viaje+=minDist;
-//            act = posMin;
-//        }
-//    }
-//    return camino;
-//}
-//
 
 vector<Nodo> tsp2(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, float p, float MAX_X, float MAX_Y){
     vector<Nodo> camino;
@@ -353,18 +298,25 @@ vector<Nodo> tsp_con_grasp(vector<Nodo>& nodos, int nodo_comienzo, float &costo_
 
 //
 
-void generarOutput(vector<vector<Nodo>>& clusters){
+void generarOutput(const vector<vector<Nodo>>& clusters, string nombre, Nodo depo){
     int cantClusters = 1;
 
     ofstream salida;
-    salida.open("output.csv");
+    salida.open("../salida/" + nombre + "/" + nombre + ".csv");
+
+    salida << depo.indice << ",";
+    salida << depo.x << ",";
+    salida << depo.y << ",";
+    salida << clusters.size() + 1 << endl;
 
     for(int i = 0; i < clusters.size(); i++){
         for(int j = 0 ; j < clusters[i].size(); j++){
-            salida << clusters[i][j].indice << ",";
-            salida << clusters[i][j].x << ",";
-            salida << clusters[i][j].y << ",";
-            salida << cantClusters << endl;
+            if(!(depo == clusters[i][j])){
+                salida << clusters[i][j].indice << ",";
+                salida << clusters[i][j].x << ",";
+                salida << clusters[i][j].y << ",";
+                salida << cantClusters << endl;
+            }
         }
         cantClusters++;
     }

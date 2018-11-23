@@ -2,8 +2,13 @@
 #include "include/sweep.hpp"
 #include "include/siman.hpp"
 #include <time.h>
+#include <fstream>
+#include <chrono>
 
 using namespace std;
+
+void exportar_grafo(vector<Nodo>& camino, float costo,int ruteo, string in);
+float convertir_para_tsp(vector<vector<Nodo>> clusterizacion, string nombre_in, float MAX_X, float MAX_Y);
 
 int main()
 {
@@ -16,8 +21,6 @@ int main()
 
     cargarDatos(lcp, vn, capacidad);
 
-    //system("pause");
-
     cout << "------------------------------" << endl;
 
     lcp.mostrarLista();
@@ -28,43 +31,19 @@ int main()
 
     cout << "------------------------------" << endl;
 
-    //system("pause");
+    cout << "SE CARGARON TODOS LOS DATOS" << "\n";
 
-    cout << "SE CARGARON TODOS LOS DATOS" << endl;
+    cout << "------------------------------" << "\n";
+
+    cout << "GENERANDO CLUSTERS" << "\n";
+
+    auto timeStartSweep = chrono::steady_clock::now();
 
     clusters = generarClusters(lcp, vn, capacidad);
 
-    //system("pause");
+    cout << "------------------------------" << "\n";
 
-    cout << "------------------------------" << endl;
-
-    cout << "SE GENERARON LOS CLUSTERS" << endl;
-
-    cout << "------------------------------" << endl;
-
-    cout << "MOSTRANDO INDICES DE CADA CLUSTER" << endl;
-
-    for(int i = 0; i < clusters.size(); i++){
-        cout << "CLUSTER " << i + 1 << ": [";
-        for(int j = 0; j < clusters[i].size(); j++){
-            cout << clusters[i][j].indice << ((j == clusters[i].size() - 1)? "" : ", ");
-        }
-        cout << "]" << endl;
-    }
-
-    //system("pause");
-
-    cout << "------------------------------" << endl;
-
-    cout << "GENERANDO OUTPUT PARA GRAFICAR" << endl;
-
-    generarOutput(clusters);
-
-    cout << "------------------------------" << endl;
-
-    //system("pause");
-
-    cout << "RESOLVIENDO CAMINOS POR TSP (Sin GRASP)" << endl;
+    cout << "RESOLVIENDO CAMINOS POR TSP" << "\n";
 
     vector<vector<Nodo>> caminosSol;
 
@@ -87,9 +66,24 @@ int main()
         caminosSol.push_back(tsp2(clusters[i], 0, costoSol, 1, max_x, max_y));
     }
 
-    cout << "------------------------------" << endl;
+    auto timeEndSweep = chrono::steady_clock::now();
 
-    //system("pause");
+    //Acá calculo lo que tardó en resolverlo el sweep
+    double timeSweep = chrono::duration<double, milli>(timeEndSweep - timeStartSweep).count();
+
+    cout << "------------------------------" << "\n";
+
+    cout << "MOSTRANDO INDICES DE CADA CLUSTER" << "\n";
+
+    for(int i = 0; i < clusters.size(); i++){
+        cout << "CLUSTER " << i + 1 << ": [";
+        for(int j = 0; j < clusters[i].size(); j++){
+            cout << clusters[i][j].indice << ((j == clusters[i].size() - 1)? "" : ", ");
+        }
+        cout << "]" << endl;
+    }
+
+    cout << "------------------------------" << endl;
 
     cout << "MOSTRANDO CAMINOS" << endl;
 
@@ -111,10 +105,19 @@ int main()
 
     cout << "EL COSTO DE LA SOL ANTES DE SIMAN: " << solActual.getCostoSol() << endl;
 
-    system("pause");
+    //system("pause");
 
-    solucionProb solSWAP = simulatedAnnealingGeneral(solActual, VECINDARIO_SWAP, 10000, 1, 5);
-    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 10000, 1, 5);
+    auto timeStartSwap = chrono::steady_clock::now();
+    solucionProb solSWAP = simulatedAnnealingGeneral(solActual, VECINDARIO_SWAP, 10000, 1, 2);
+    auto timeEndSwap = chrono::steady_clock::now();
+
+    double timeSwap = chrono::duration<double, milli>(timeEndSwap - timeStartSwap).count();
+
+    auto timeStartExchange = chrono::steady_clock::now();
+    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 5000, 1, 10);
+    auto timeEndExchange = chrono::steady_clock::now();
+
+    double timeExchange = chrono::duration<double, milli>(timeEndExchange - timeStartExchange).count();
 
     cout << "EL COSTO DE LA SOL DESPUES DE SIMAN (SWAP): " << solSWAP.getCostoSol() << "\n";
     cout << "EL COSTO DE LA SOL DESPUES DE SIMAN (EXCHANGE): " << solEXCHANGE.getCostoSol() << "\n";
@@ -145,9 +148,72 @@ int main()
 
     cout << "------------------------------" << endl;
 
+    cout << "GENERANDO OUTPUTS CAMINOS" << endl;
+
+    string swapExp = "SWAP";
+
+    string exchangeExp = "EXCHANGE";
+
+    convertir_para_tsp(solSWAP.getCaminos(), swapExp, max_x, max_y);
+
+    convertir_para_tsp(solEXCHANGE.getCaminos(), exchangeExp, max_x, max_y);
+
+    generarOutput(solSWAP.getCaminos(), swapExp, lcp.getNodoBase());
+
+    generarOutput(solEXCHANGE.getCaminos(), exchangeExp, lcp.getNodoBase());
+
+    ofstream arSalida;
+
+    arSalida.open("../salida/" + swapExp + "/" + swapExp + ".txt", std::ios_base::app);
+    arSalida << vn.size() << "," << solSWAP.getCostoSol() << "," << timeSwap << "\n";
+    arSalida.close();
+
+    arSalida.open("../salida/" + exchangeExp + "/" + exchangeExp + ".txt", std::ios_base::app);
+    arSalida << vn.size() << "," << solEXCHANGE.getCostoSol() << "," << timeExchange << "\n";
+    arSalida.close();
+
+    arSalida.open("../salida/SWEEP/SWEEP.txt", std::ios_base::app);
+    arSalida << vn.size() << "," << solActual.getCostoSol() << "," << timeSweep << "\n";
+    arSalida.close();
+
+    cout << "------------------------------" << endl;
+
     cout << "FIN DEL PROGRAMA" << endl;
 
     cout << "------------------------------" << endl;
 
     return 0;
+}
+
+float convertir_para_tsp(vector<vector<Nodo>> clusterizacion, string nombre_in, float MAX_X, float MAX_Y){
+    float costo_viaje = 0;
+    float ctsp2=0;
+    vector<vector<Nodo> > mat(clusterizacion.size());
+
+    for (int i = 0; i < clusterizacion.size(); ++i) {
+        vector<Nodo> nodos(clusterizacion[i].size() - 1);
+
+        for(int j=0; j<nodos.size(); j++){
+            nodos[j] = clusterizacion[i][j];
+        }
+
+        ctsp2 += calcularCostoCamino(clusterizacion[i]);
+        exportar_grafo(clusterizacion[i], costo_viaje, i, nombre_in);
+    }
+    cout <<"Costo total: "<<ctsp2<<endl;
+    return ctsp2;
+}
+
+void exportar_grafo(vector<Nodo>& camino, float costo, int ruteo, string in){
+    ofstream fout;
+    auto s = std::to_string(ruteo);
+    fout.open("../salida/" + in + "/"+ in + "-ruteo" + s + ".csv");
+    for (int i = 0; i < camino.size()-1; ++i) {
+        fout << camino[i].indice<<","<<camino[i].x<<","<< camino[i].y<<endl;//indice,posx,posy
+    }
+    for (int j = 0; j < camino.size()-1; ++j) {
+        fout << camino[j].indice<<","<<camino[j+1].indice<<endl;//indice_nodo_a,indice_nodo_b
+    }
+    fout<<costo;
+    fout.close();
 }

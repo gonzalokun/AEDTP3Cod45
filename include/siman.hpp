@@ -70,7 +70,7 @@ solucionProb simulatedAnnealingGeneral(solucionProb& solucionInicial, int modo, 
 
 vector<Nodo> simulatedAnnealingCamino(vector<Nodo>& caminoInicial, int modo, float temperaturaMax, float temperaturaMin, float coefEnfriamiento);
 
-solucionProb simulatedAnnealingExhcange(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento);
+solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento);
 
 vector<vector<Nodo>> generarVecindario(vector<Nodo>& base, int modo);
 

@@ -51,7 +51,7 @@ struct Nodo {
     }
 
     //Nodo (Nodo &n) : x(n.x), y(n.y), indice(n.indice) {}
-    bool operator==(Nodo &n) {
+    bool operator==(const Nodo &n) {
         return(this->x == n.x && this->y == n.y);
     }
 

@@ -37,7 +37,7 @@ solucionProb simulatedAnnealingGeneral(solucionProb& solucionInicial, int modo, 
             return solucionProb(solucionInicial.getCapacidad(), caminosIniciales);
         }
         case VECINDARIO_EXCHANGE:{
-            return simulatedAnnealingExhcange(solucionInicial, temperaturaMax, temperaturaMin, coefEnfriamiento);
+            return simulatedAnnealingExchange(solucionInicial, temperaturaMax, temperaturaMin, coefEnfriamiento);
         }
     }
 }
@@ -53,9 +53,9 @@ vector<Nodo> simulatedAnnealingCamino(vector<Nodo>& caminoInicial, int modo, flo
     int cantSaltos = 0;
 
     std::random_device seed;
-    //std::mt19937 engine(seed());
-    std::default_random_engine generator;
-    generator.seed(seed());
+    std::mt19937 engine(seed());
+    //std::default_random_engine generator;
+    //generator.seed(seed());
 
     while(tempActual >= temperaturaMin){
         cantCiclos++;
@@ -64,7 +64,7 @@ vector<Nodo> simulatedAnnealingCamino(vector<Nodo>& caminoInicial, int modo, flo
         //Elige al azar un indice
         std::uniform_int_distribution<int> choose(0, vecindario.size()-1);
 
-        int index = choose(generator);
+        int index = choose(engine);
 
         //cout << "SE ELIGIO EL VECINO: " << index << "\n";
 
@@ -105,28 +105,28 @@ vector<Nodo> simulatedAnnealingCamino(vector<Nodo>& caminoInicial, int modo, flo
         tempActual -= coefEnfriamiento;
     }
 
-    cout << "EN " << cantCiclos << " CICLOS SE HICIERON " << cantSaltos << " SALTOS\n";
+    //cout << "EN " << cantCiclos << " CICLOS SE HICIERON " << cantSaltos << " SALTOS\n";
 
     return caminoSol;
 }
 
-solucionProb simulatedAnnealingExhcange(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento){
+solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento){
     float tempActual = temperaturaMax;
     solucionProb solFinal = solucionInicial;
     solucionProb solActual = solucionInicial;
 
     //VARIABLES DEBUG
-    int cantCiclos = 0;
-    int cantSaltos = 0;
+    //int cantCiclos = 0;
+    //int cantSaltos = 0;
 
     //Elige al azar un indice
     std::random_device seed;
-    //std::mt19937 engine(seed());
-    std::default_random_engine generator;
-    generator.seed(seed());
+    std::mt19937 engine(seed());
+    //std::default_random_engine generator(seed());
+    //generator.seed(seed());
 
     while(tempActual >= temperaturaMin){
-        cantCiclos++;
+        //cantCiclos++;
 
         //cout << "COSTO SOL ACTUAL: " << solActual.getCostoSol() << "\n";
 
@@ -137,7 +137,7 @@ solucionProb simulatedAnnealingExhcange(solucionProb& solucionInicial, float tem
 
         std::uniform_int_distribution<int> choose(0, vecindario.size()-1);
 
-        int index = choose(generator);
+        int index = choose(engine);
 
         //cout << "SE ELIGIO EL VECINO: " << index << "\n";
 
@@ -166,7 +166,7 @@ solucionProb simulatedAnnealingExhcange(solucionProb& solucionInicial, float tem
             //cout << "energiaEstadoActual: " << energiaEstadoActual << "\n";
             //cout << "energiaNuevoEstado: " << energiaNuevoEstado << "\n";
             //cout << "----------------------------------------" << "\n";
-            cantSaltos++;
+            //cantSaltos++;
             solActual = solTentativa;
         }
 
@@ -178,7 +178,7 @@ solucionProb simulatedAnnealingExhcange(solucionProb& solucionInicial, float tem
         tempActual -= coefEnfriamiento;
     }
 
-    cout << "EN " << cantCiclos << " CICLOS SE HICIERON " << cantSaltos << " SALTOS\n";
+    //cout << "EN " << cantCiclos << " CICLOS SE HICIERON " << cantSaltos << " SALTOS\n";
 
     return solFinal;
 }

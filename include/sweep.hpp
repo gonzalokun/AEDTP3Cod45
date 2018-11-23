@@ -14,6 +14,6 @@ vector<Nodo> tsp2(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, fl
 
 vector<Nodo> tsp_con_grasp(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, float p, float MAX_X, float MAX_Y);
 
-void generarOutput(vector<vector<Nodo>>& clusters);
+void generarOutput(const vector<vector<Nodo>>& clusters, string nombre, Nodo depo);
 
 #endif // SWEEP_HPP
