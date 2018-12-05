@@ -108,31 +108,31 @@ int main()
     //system("pause");
 
     auto timeStartSwap = chrono::steady_clock::now();
-    solucionProb solSWAP = simulatedAnnealingGeneral(solActual, VECINDARIO_SWAP, 10000, 1, 2);
+//    solucionProb solSWAP = simulatedAnnealingGeneral(solActual, VECINDARIO_SWAP, 10000, 1, 2);
     auto timeEndSwap = chrono::steady_clock::now();
 
     double timeSwap = chrono::duration<double, milli>(timeEndSwap - timeStartSwap).count();
 
     auto timeStartExchange = chrono::steady_clock::now();
-    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 5000, 1, 10);
+    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 5000, 1, 1);
     auto timeEndExchange = chrono::steady_clock::now();
 
     double timeExchange = chrono::duration<double, milli>(timeEndExchange - timeStartExchange).count();
 
-    cout << "EL COSTO DE LA SOL DESPUES DE SIMAN (SWAP): " << solSWAP.getCostoSol() << "\n";
+//    cout << "EL COSTO DE LA SOL DESPUES DE SIMAN (SWAP): " << solSWAP.getCostoSol() << "\n";
     cout << "EL COSTO DE LA SOL DESPUES DE SIMAN (EXCHANGE): " << solEXCHANGE.getCostoSol() << "\n";
 
     cout << "------------------------------" << endl;
 
     cout << "SOLUCION DEL SIMAN (SWAP)" << endl;
 
-    for(int i = 0; i < solSWAP.getCaminos().size(); i++) {
-        cout << "CAMINO " << i << ": [";
-        for (int j = 0; j < solSWAP.getCaminos()[i].size(); j++) {
-            cout << solSWAP.getCaminos()[i][j].indice << ((j == solSWAP.getCaminos()[i].size() - 1)? ("]") : (", "));
-        }
-        cout << endl;
-    }
+//    for(int i = 0; i < solSWAP.getCaminos().size(); i++) {
+//        cout << "CAMINO " << i << ": [";
+//        for (int j = 0; j < solSWAP.getCaminos()[i].size(); j++) {
+//            cout << solSWAP.getCaminos()[i][j].indice << ((j == solSWAP.getCaminos()[i].size() - 1)? ("]") : (", "));
+//        }
+//        cout << endl;
+//    }
 
     cout << "------------------------------" << endl;
 
@@ -154,19 +154,19 @@ int main()
 
     string exchangeExp = "EXCHANGE";
 
-    convertir_para_tsp(solSWAP.getCaminos(), swapExp, max_x, max_y);
+//    convertir_para_tsp(solSWAP.getCaminos(), swapExp, max_x, max_y);
 
     convertir_para_tsp(solEXCHANGE.getCaminos(), exchangeExp, max_x, max_y);
 
-    generarOutput(solSWAP.getCaminos(), swapExp, lcp.getNodoBase());
+//    generarOutput(solSWAP.getCaminos(), swapExp, lcp.getNodoBase());
 
     generarOutput(solEXCHANGE.getCaminos(), exchangeExp, lcp.getNodoBase());
 
     ofstream arSalida;
 
-    arSalida.open("../salida/" + swapExp + "/" + swapExp + ".txt", std::ios_base::app);
-    arSalida << vn.size() << "," << solSWAP.getCostoSol() << "," << timeSwap << "\n";
-    arSalida.close();
+//    arSalida.open("../salida/" + swapExp + "/" + swapExp + ".txt", std::ios_base::app);
+//    arSalida << vn.size() << "," << solSWAP.getCostoSol() << "," << timeSwap << "\n";
+//    arSalida.close();
 
     arSalida.open("../salida/" + exchangeExp + "/" + exchangeExp + ".txt", std::ios_base::app);
     arSalida << vn.size() << "," << solEXCHANGE.getCostoSol() << "," << timeExchange << "\n";
