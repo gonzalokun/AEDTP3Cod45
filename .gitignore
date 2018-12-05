@@ -38,3 +38,7 @@ cmake-build-debug/
 binaries/
 bin/
 obj/
+salida/SWAP
+salida/SWEEP
+salida/EXCHANGE
+.ipynb_checkpoints/
