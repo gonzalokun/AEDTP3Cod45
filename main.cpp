@@ -105,7 +105,37 @@ int main()
 
     cout << "EL COSTO DE LA SOL ANTES DE SIMAN: " << solActual.getCostoSol() << endl;
 
-    //system("pause");
+    cout << "TESTING CLASE SOL" << "\n";
+
+    solucionProb solNueva = solActual;
+
+    bool testLargo = solNueva.getCaminos().size() == solActual.getCaminos().size();
+
+    cout << "TEST TIENE LA MISMA CANT CAMINOS QUE LA DE LA SOL ACTUAL: " << ((testLargo)?"TRUE":"FALSE") << "\n";
+
+    system("pause");
+
+    bool testLargo2 = true;
+
+    for(int i = 0; i < solActual.getCaminos().size() && testLargo2; i++){
+        testLargo2 = solActual.getCaminos()[i].size() == solNueva.getCaminos()[i].size();
+    }
+
+    cout << "LOS CAMINOS DE TEST TIENEN LA MISMA LONGITUD QUE LOS DE LA SOL ACTUAL: " << ((testLargo2)?"TRUE":"FALSE") << "\n";
+
+    system("pause");
+
+    bool testIgualdad = true;
+
+    for(int i = 0; i < solActual.getCaminos().size() && testIgualdad; i++){
+        for(int j=0; j < solActual.getCaminos()[i].size() && testIgualdad; j++){
+            testIgualdad = solActual.getCaminos()[i][j] == solNueva.getCaminos()[i][j];
+        }
+    }
+
+    cout << "LOS ELEMENTOS DE LOS CAMINOS DE TEST Y LA SOL SON IGUALES: " << ((testIgualdad)?"TRUE":"FALSE") << "\n";
+
+    system("pause");
 
     auto timeStartSwap = chrono::steady_clock::now();
 //    solucionProb solSWAP = simulatedAnnealingGeneral(solActual, VECINDARIO_SWAP, 10000, 1, 2);
@@ -114,7 +144,7 @@ int main()
     double timeSwap = chrono::duration<double, milli>(timeEndSwap - timeStartSwap).count();
 
     auto timeStartExchange = chrono::steady_clock::now();
-    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 5000, 1, 1);
+    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 10000, 1, 1);
     auto timeEndExchange = chrono::steady_clock::now();
 
     double timeExchange = chrono::duration<double, milli>(timeEndExchange - timeStartExchange).count();

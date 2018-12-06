@@ -152,6 +152,9 @@ solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float tem
         float energiaEstadoActual = solActual.getCostoSol();
         float energiaNuevoEstado = solTentativa.getCostoSol();
 
+        cout << "COSTO ESTADO ACTUAL: " << energiaEstadoActual << "\n";
+        cout << "COSTO ESTADO NUEVO: " << energiaNuevoEstado << "\n";
+
         if(energiaNuevoEstado < energiaEstadoActual){
             prob = 1.0;
         }
@@ -172,7 +175,12 @@ solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float tem
 
         //Guardamos la mejor
         if(solActual.getCostoSol() < solFinal.getCostoSol()){
+            float costoFinal = solFinal.getCostoSol();
+            float costoNuevo = solActual.getCostoSol();
+
             solFinal = solActual;
+
+            cout << "SE REDUJO EL COSTO DE LA SOLUCION DE " << costoFinal << " A " << costoNuevo <<"\n";
         }
 
         tempActual -= coefEnfriamiento;
@@ -298,4 +306,8 @@ bool capacidadAlcanza(float capacidad, vector<Nodo> camino){
     }
 
     return (capacidad >= demandaTotal);
+}
+
+solucionProb simulatedAnnealingOsman(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento){
+    //
 }
