@@ -1,0 +1,5 @@
+Instancia,n,capacidad-camion,k-opt,costo-opt,Algoritmo,costo-sol,k-sol,tiempo
+X-n153-k22,153,144,22,21220,SWEEP,29902.2,30,318
+X-n167-k10,167,133,10,20557,SWEEP,25285.7,10,334
+X-n176-k26,176,142,26,47812,SWEEP,69232,34,344
+X-n186-k15,186,974,15,24145,SWEEP,29251,15,355

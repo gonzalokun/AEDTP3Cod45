@@ -16,14 +16,19 @@ int main()
     vector<Nodo> vn;
     float capacidad;
     vector<vector<Nodo>> clusters;
+    string nombreCaso;
+    int kOpt;
+    float costoOpt;
 
     srand(time(NULL));
 
-    cargarDatos(lcp, vn, capacidad);
+    auto timeStartSweep = chrono::steady_clock::now();
 
-    cout << "------------------------------" << endl;
+    cargarDatos(lcp, vn, capacidad, nombreCaso, kOpt, costoOpt);
 
-    lcp.mostrarLista();
+    //cout << "------------------------------" << endl;
+
+    //lcp.mostrarLista();
 
     cout << "------------------------------" << endl;
 
@@ -35,18 +40,7 @@ int main()
 
     cout << "------------------------------" << "\n";
 
-    cout << "GENERANDO CLUSTERS" << "\n";
-
-    auto timeStartSweep = chrono::steady_clock::now();
-
-    clusters = generarClusters(lcp, vn, capacidad);
-
-    cout << "------------------------------" << "\n";
-
-    cout << "RESOLVIENDO CAMINOS POR TSP" << "\n";
-
-    vector<vector<Nodo>> caminosSol;
-
+    //CALCULO EL X e Y MAXIMOS
     float max_x, max_y;
     max_x = vn[0].x;
     max_y = vn[0].y;
@@ -60,10 +54,47 @@ int main()
         }
     }
 
+    cout << "GENERANDO CLUSTERS" << "\n";
+
+    //auto timeStartSweep = chrono::steady_clock::now();
+
+    clusters = generarClusters(lcp, vn, capacidad);
+
+//    cout << "------------------------------" << "\n";
+//
+//    cout << "MOSTRANDO INDICES DE CADA CLUSTER" << "\n";
+//
+//    int nodosAsignados = 0;
+//
+//    for(int i = 0; i < clusters.size(); i++){
+//        float demandaCamino = 0;
+//
+//        cout << "CAMINO " << i + 1 << ": [";
+//        for(int j = 0; j < clusters[i].size(); j++){
+//            cout << clusters[i][j].indice << ((j == clusters[i].size() - 1)? "" : ", ");
+//            demandaCamino += clusters[i][j].demanda;
+//            nodosAsignados++; //CUENTA EL DEPOSITO VARIAS VECES
+//        }
+//
+//        cout << "] Demanda del camino: " << demandaCamino << " de " << capacidad << "\n";
+//    }
+//
+//    nodosAsignados -= clusters.size() - 1; //EL DEPO SE REPITE CANT. CAMINOS - 1 VECES
+//
+//    cout << "CANT. NODOS ASIGNADOS: " << nodosAsignados << " DE " << vn.size() << endl;
+
+    cout << "------------------------------" << "\n";
+
+    cout << "RESOLVIENDO CAMINOS POR TSP" << "\n";
+
+    vector<vector<Nodo>> caminosSol;
+
     //Voy solucionando todos los caminos
     for(int i = 0; i < clusters.size(); i++){
         float costoSol = 0;
-        caminosSol.push_back(tsp2(clusters[i], 0, costoSol, 1, max_x, max_y));
+        //cout << "CALCULANDO CAMINO: " << i << "\n";
+        //caminosSol.push_back(tsp2(clusters[i], 0, costoSol, 1, max_x, max_y));
+        caminosSol.push_back(tsp_con_grasp(clusters[i], 0, costoSol, 1, max_x, max_y));
     }
 
     auto timeEndSweep = chrono::steady_clock::now();
@@ -71,71 +102,68 @@ int main()
     //Acá calculo lo que tardó en resolverlo el sweep
     double timeSweep = chrono::duration<double, milli>(timeEndSweep - timeStartSweep).count();
 
-    cout << "------------------------------" << "\n";
-
-    cout << "MOSTRANDO INDICES DE CADA CLUSTER" << "\n";
-
-    for(int i = 0; i < clusters.size(); i++){
-        cout << "CLUSTER " << i + 1 << ": [";
-        for(int j = 0; j < clusters[i].size(); j++){
-            cout << clusters[i][j].indice << ((j == clusters[i].size() - 1)? "" : ", ");
-        }
-        cout << "]" << endl;
-    }
-
-    cout << "------------------------------" << endl;
-
-    cout << "MOSTRANDO CAMINOS" << endl;
-
-    for(int i = 0; i < caminosSol.size(); i++) {
-        cout << "CAMINO " << i << ": [";
-        for (int j = 0; j < caminosSol[i].size(); j++) {
-            cout << caminosSol[i][j].indice << ((j == caminosSol[i].size() - 1)? ("]") : (", "));
-        }
-        cout << endl;
-    }
+//    cout << "------------------------------" << endl;
+//
+//    cout << "MOSTRANDO CAMINOS" << endl;
+//
+//    for(int i = 0; i < caminosSol.size(); i++) {
+//        cout << "CAMINO " << i << ": [";
+//        for (int j = 0; j < caminosSol[i].size(); j++) {
+//            cout << caminosSol[i][j].indice << ((j == caminosSol[i].size() - 1)? ("]") : (", "));
+//        }
+//        cout << endl;
+//    }
 
     cout << "------------------------------" << endl;
-
-    //system("pause");
-
-    cout << "APLICANDO SIMAN A LA SOLUCION PARA VER SI MEJORA" << endl;
 
     solucionProb solActual(capacidad, caminosSol);
 
+    //Guardo el archivo
+    ofstream arSalida;
+
+    arSalida.open("../salida/clusteringSWEEP.csv", std::ios_base::app);
+    arSalida << nombreCaso << "," << vn.size() << "," << solActual.getCapacidad() << "," << kOpt << "," << costoOpt << "," << "SWEEP" << "," << solActual.getCostoSol() << "," << solActual.getCaminos().size() << "," << timeSweep << "\n";
+    arSalida.close();
+
     cout << "EL COSTO DE LA SOL ANTES DE SIMAN: " << solActual.getCostoSol() << endl;
 
-    cout << "TESTING CLASE SOL" << "\n";
-
-    solucionProb solNueva = solActual;
-
-    bool testLargo = solNueva.getCaminos().size() == solActual.getCaminos().size();
-
-    cout << "TEST TIENE LA MISMA CANT CAMINOS QUE LA DE LA SOL ACTUAL: " << ((testLargo)?"TRUE":"FALSE") << "\n";
-
     system("pause");
 
-    bool testLargo2 = true;
+    //EMPIEZA SIMAN////////////////////////////
 
-    for(int i = 0; i < solActual.getCaminos().size() && testLargo2; i++){
-        testLargo2 = solActual.getCaminos()[i].size() == solNueva.getCaminos()[i].size();
-    }
+//    cout << "TESTING CLASE SOL" << "\n";
+//
+//    solucionProb solNueva = solActual;
+//
+//    bool testLargo = solNueva.getCaminos().size() == solActual.getCaminos().size();
+//
+//    cout << "TEST TIENE LA MISMA CANT CAMINOS QUE LA DE LA SOL ACTUAL: " << ((testLargo)?"TRUE":"FALSE") << "\n";
+//
+//    system("pause");
+//
+//    bool testLargo2 = true;
+//
+//    for(int i = 0; i < solActual.getCaminos().size() && testLargo2; i++){
+//        testLargo2 = solActual.getCaminos()[i].size() == solNueva.getCaminos()[i].size();
+//    }
+//
+//    cout << "LOS CAMINOS DE TEST TIENEN LA MISMA LONGITUD QUE LOS DE LA SOL ACTUAL: " << ((testLargo2)?"TRUE":"FALSE") << "\n";
+//
+//    system("pause");
+//
+//    bool testIgualdad = true;
+//
+//    for(int i = 0; i < solActual.getCaminos().size() && testIgualdad; i++){
+//        for(int j=0; j < solActual.getCaminos()[i].size() && testIgualdad; j++){
+//            testIgualdad = solActual.getCaminos()[i][j] == solNueva.getCaminos()[i][j];
+//        }
+//    }
+//
+//    cout << "LOS ELEMENTOS DE LOS CAMINOS DE TEST Y LA SOL SON IGUALES: " << ((testIgualdad)?"TRUE":"FALSE") << "\n";
+//
+//    system("pause");
 
-    cout << "LOS CAMINOS DE TEST TIENEN LA MISMA LONGITUD QUE LOS DE LA SOL ACTUAL: " << ((testLargo2)?"TRUE":"FALSE") << "\n";
-
-    system("pause");
-
-    bool testIgualdad = true;
-
-    for(int i = 0; i < solActual.getCaminos().size() && testIgualdad; i++){
-        for(int j=0; j < solActual.getCaminos()[i].size() && testIgualdad; j++){
-            testIgualdad = solActual.getCaminos()[i][j] == solNueva.getCaminos()[i][j];
-        }
-    }
-
-    cout << "LOS ELEMENTOS DE LOS CAMINOS DE TEST Y LA SOL SON IGUALES: " << ((testIgualdad)?"TRUE":"FALSE") << "\n";
-
-    system("pause");
+    cout << "APLICANDO SIMAN A LA SOLUCION PARA VER SI MEJORA" << endl;
 
     auto timeStartSwap = chrono::steady_clock::now();
 //    solucionProb solSWAP = simulatedAnnealingGeneral(solActual, VECINDARIO_SWAP, 10000, 1, 2);
@@ -144,7 +172,7 @@ int main()
     double timeSwap = chrono::duration<double, milli>(timeEndSwap - timeStartSwap).count();
 
     auto timeStartExchange = chrono::steady_clock::now();
-    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 10000, 1, 1);
+    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 5000, 1, 100);
     auto timeEndExchange = chrono::steady_clock::now();
 
     double timeExchange = chrono::duration<double, milli>(timeEndExchange - timeStartExchange).count();
@@ -192,7 +220,7 @@ int main()
 
     generarOutput(solEXCHANGE.getCaminos(), exchangeExp, lcp.getNodoBase());
 
-    ofstream arSalida;
+//    ofstream arSalida;
 
 //    arSalida.open("../salida/" + swapExp + "/" + swapExp + ".txt", std::ios_base::app);
 //    arSalida << vn.size() << "," << solSWAP.getCostoSol() << "," << timeSwap << "\n";

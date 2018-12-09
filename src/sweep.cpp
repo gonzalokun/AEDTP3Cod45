@@ -59,10 +59,15 @@ void MatrizAdyacencias::convertirAListaAdy(ListaAdyacencias& la) {
 
 //////////////////
 
-void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad){
+void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad, string& nombreCaso, int& kopt, float& costoOpt){
     //Hay que leer el archivo y llenar las estructuras
     ifstream entrada;
     entrada.open("inputCPP.txt");
+
+    //Obtenemos el nombre del caso, la cantidad optima de camiones y la solucion optima
+    entrada >> nombreCaso;
+    entrada >> kopt;
+    entrada >> costoOpt;
 
     int tam = 0;
     entrada >> tam;
@@ -75,7 +80,7 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad){
     std::string line;
     int estado = LEYENDO_PUNTOS; //0 - ingreso puntos, 1 - ingreso demandas, 2 - ingreso punto central
     int cont = 0;
-    bool noSeteado = true;
+    bool seteadoNodoCentral = false;
 
     while(std::getline(entrada, line)){
         //Esto es para asegurar que la primera linea leida no sea vacia
@@ -135,29 +140,30 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad){
 
         case DEFINIENDO_PUNTO_CENTRAL:{
             //ESTO SOLO DEBERIA EJECUTARSE UNA VEZ
-            std::stringstream ss(line);
+            if(!seteadoNodoCentral){
+                std::stringstream ss(line);
 
-            int id;
+                int id;
 
-            ss >> id;
+                ss >> id;
 
-            cout << "PUNTO CENTRAL LEIDO ES " << id << endl;
+                cout << "PUNTO CENTRAL LEIDO ES " << id << endl;
 
-            if(id != -1){
-                lcp.setearNodoBase(vn[id - 1]);
+                if(id != -1){
+                    lcp.setearNodoBase(vn[id - 1]);
+                }
+
+                cout << "SE SETEO COMO PUNTO CENTRAL EL NODO CON ID " << lcp.getNodoBase().indice << endl;
+
+                seteadoNodoCentral = true;
             }
-
-            cout << "SE SETEO COMO PUNTO CENTRAL EL NODO CON ID " << lcp.getNodoBase().indice << endl;
-
-            noSeteado = false;
-
             } break;
         }
     }
 
     entrada.close();
 
-    if(noSeteado){
+    if(!seteadoNodoCentral){
         lcp.setearNodoBase(vn[0]);
     }
 
@@ -169,7 +175,7 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad){
         //cout << "Voy a agregar al nodo con id: " << i << endl;
         //Agrego todos los puntos menos el de dep�sito, que sabemos que siempre va a estar en el camino
         if(i + 1 != lcp.getNodoBase().indice){
-            cout << "SE AGREGA A LA LISTA EL NODO CON ID: " << vn[i].indice << endl;
+            //cout << "SE AGREGA A LA LISTA EL NODO CON ID: " << vn[i].indice << endl;
             lcp.agregarNodo(vn[i]);
         }
     }
@@ -261,7 +267,7 @@ vector<Nodo> tsp2(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, fl
             posMin = posible_nodo;
             minDist = distancias_entre_nodos[act][posible_nodo];
         }
-        if(posMin == -1) { //Significa que no hay mas que visitar
+        if(posible_nodo == -1) { //Significa que no hay mas que visitar
             hay_nodos= false;
             costo_viaje += distancias_entre_nodos[act][nodo_comienzo];
             //cout <<"Agrego trayecto de "<< nodos[act].indice<<" a "<< nodos[0].indice<<endl;
@@ -278,22 +284,85 @@ vector<Nodo> tsp2(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, fl
 
 vector<Nodo> tsp_con_grasp(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, float p, float MAX_X, float MAX_Y) {
     //Genero solucion con heuristica golosa
-    float costo_sol_golosa=0, costo_aux = 0, costo_min;
-    vector<Nodo> sol = tsp2(nodos,nodo_comienzo,costo_sol_golosa,1,MAX_X, MAX_Y);
-    costo_min = costo_sol_golosa;
-    vector<Nodo> aux;
-    float p_shift = 0.1;
-    while (p>=0.5){
-        aux = tsp2(nodos,nodo_comienzo,costo_aux,p,MAX_X, MAX_Y);
-        if(costo_aux < costo_sol_golosa){
-            sol = aux;
-            costo_min = costo_aux;
+    float costo_sol_golosa=0;
+    vector<Nodo> sol = tsp2(nodos,nodo_comienzo,costo_sol_golosa,1, MAX_X, MAX_Y); //conseguimos la primera solucion de forma golosa
+    vector<Nodo> mejor_so, mejor_sol = sol;
+    float mejor_costo = costo_sol_golosa;
+    float shift = 0.1;
+    while(p>=1) {//O(1)
+        //Aplico busqueda lineal a nuevas soluciones
+        for (int i = 1; i < sol.size() - 2; ++i) {//O(TAMCLUSTER_i * TAMCLUSTER_i * opt_swap(TAM_CLUSTER_i)) = O(TAMCLUSTER_i * TAMCLUSTER_i * TAMCLUSTER_i) < O(n^3)
+
+            float costo_nueva_sol = 0;
+            for (int j = i + 1; j < sol.size()-1; ++j) {
+                costo_nueva_sol=0;
+                vector<Nodo> aux = opt_swap2(sol,i,j,costo_nueva_sol);
+                if(costo_nueva_sol<mejor_costo){
+                    mejor_sol=aux;
+                    mejor_costo=costo_nueva_sol;
+                }
+            }
+
+
         }
-        costo_aux=0;
-        p -=p_shift;
+        p-=shift;
+        costo_sol_golosa = 0;
+        sol = tsp2(nodos,nodo_comienzo,costo_sol_golosa,p,MAX_X, MAX_Y);
+        if(costo_sol_golosa<mejor_costo){
+            mejor_costo=costo_sol_golosa;
+            sol = mejor_sol;
+        }
     }
-    costo_viaje = costo_min;
-    return sol;
+    costo_viaje = mejor_costo;
+    return mejor_sol;
+}
+
+//
+
+vector<Nodo> opt_swap(vector<Nodo>& nodos, vector<Nodo>& solucion_actual, int tope1, int tope2, float& costo_solucion){//O(TAMCLUSTER_i)
+    /*
+     * 2optSwap(route, i, k) {
+       1. take route[0] to route[i-1] and add them in order to new_route
+       2. take route[i] to route[k] and add them in reverse order to new_route
+       3. take route[k+1] to end and add them in order to new_route
+       return new_route;
+       */
+    costo_solucion = 0;
+    vector<Nodo> nueva_sol;
+    float costo_nueva_sol = 0;
+    for (int i = 0; i < solucion_actual.size(); i++) {
+        if(i<tope1) {//agrego en orden de solucion actual
+            nueva_sol.push_back(solucion_actual[i]);
+        }
+        else if(i>= tope1 && i <= tope2){//agrego en orden inverso
+            nueva_sol.push_back(solucion_actual[i+abs(tope2-i)]);
+
+        }else if(i>tope2){ //agrego en orden de sol actual
+            nueva_sol.push_back(solucion_actual[i]);
+        }
+    }
+    for (int i = 0; i < nueva_sol.size(); ++i) {
+        costo_nueva_sol += distancia_euclidea(nueva_sol[i].x, nueva_sol[i].y, nueva_sol[i + 1].x, nueva_sol[i + 1].y);
+    }
+    costo_solucion = costo_nueva_sol;
+    return solucion_actual;
+
+}
+
+vector<Nodo> opt_swap2(vector<Nodo>& solucion_actual, int tope1, int tope2, float& costo_solucion){//O(TAMCLUSTER_i)
+
+    costo_solucion = 0;
+    for (int i = tope2; i <= tope1; i--) {//le saco las puntas que son los
+        Nodo aux = solucion_actual[tope1+abs(tope2-i)];
+        solucion_actual[tope1+abs(tope2-i)]=solucion_actual[i];
+        solucion_actual[i] = aux;
+    }
+    for (int i = 0; i < solucion_actual.size(); ++i) {
+        costo_solucion += distancia_euclidea(solucion_actual[i].x, solucion_actual[i].y, solucion_actual[i + 1].x, solucion_actual[i + 1].y);
+    }
+
+    return solucion_actual;
+
 }
 
 //
