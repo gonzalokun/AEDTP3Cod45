@@ -4,6 +4,7 @@
 #include <time.h>
 #include <fstream>
 #include <chrono>
+#include <sstream>
 
 using namespace std;
 
@@ -172,7 +173,7 @@ int main()
     double timeSwap = chrono::duration<double, milli>(timeEndSwap - timeStartSwap).count();
 
     auto timeStartExchange = chrono::steady_clock::now();
-    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 5000, 1, 100);
+    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 10000, 1, 10);
     auto timeEndExchange = chrono::steady_clock::now();
 
     double timeExchange = chrono::duration<double, milli>(timeEndExchange - timeStartExchange).count();
@@ -264,7 +265,13 @@ float convertir_para_tsp(vector<vector<Nodo>> clusterizacion, string nombre_in, 
 
 void exportar_grafo(vector<Nodo>& camino, float costo, int ruteo, string in){
     ofstream fout;
-    auto s = std::to_string(ruteo);
+    //auto s = std::to_string(ruteo);
+    std::ostringstream ss;
+
+    ss << ruteo;
+
+    auto s = ss.str();
+
     fout.open("../salida/" + in + "/"+ in + "-ruteo" + s + ".csv");
     for (int i = 0; i < camino.size()-1; ++i) {
         fout << camino[i].indice<<","<<camino[i].x<<","<< camino[i].y<<endl;//indice,posx,posy

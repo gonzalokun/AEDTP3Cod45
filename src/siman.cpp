@@ -232,6 +232,69 @@ vector<solucionProb> generarVecindarioEXCHANGE(solucionProb& base){
 
     vector<vector<Nodo>> caminosBase = base.getCaminos();
 
+//    for(int i=0; i < caminosBase.size() - 1; i++){
+//        for(int j=1; j < caminosBase[i].size() - 1; j++){
+//            //de 1 a n-2 porque 0 y n-1 son el mismo nodo porque es el principio y el fin
+//            for(int k = i+1; k < caminosBase.size(); k++){
+//                for(int l=1; l < caminosBase[k].size() - 1; l++){
+//
+//                    //(0,1); acá los otros caminos le "dan" nodos al camino i esimo
+//                    vector<vector<Nodo>> caminosAux = caminosBase;
+//
+//                    caminosAux[i].insert(caminosAux[i].begin() + j, caminosAux[k][l]);
+//                    caminosAux[k].erase(caminosAux[k].begin() + l);
+//
+//                    if(capacidadAlcanza(base.getCapacidad(), caminosAux[k]) && capacidadAlcanza(base.getCapacidad(), caminosAux[i])){
+//                        //cout << "ALCANZO LA CAPACIDAD!\n";
+//
+//                        //Si el k esimo camino tiene dos elem, es un camino que empieza y termina en el mismo nodo
+//                        if(caminosAux[k].size() == 2)
+//                            caminosAux.erase(caminosAux.begin() + k);
+//
+//                        solucionProb solActual(base.getCapacidad(), caminosAux);
+//                        sol.push_back(solActual);
+//                    }
+//
+//                    //(1,0); acá el i esimo le da nodos a los otros
+//                    caminosAux = caminosBase;
+//
+//                    caminosAux[k].insert(caminosAux[k].begin() + l, caminosAux[i][j]);
+//                    caminosAux[i].erase(caminosAux[i].begin() + j);
+//
+//                    if(capacidadAlcanza(base.getCapacidad(), caminosAux[k]) && capacidadAlcanza(base.getCapacidad(), caminosAux[i])){
+//                        //cout << "ALCANZO LA CAPACIDAD!\n";
+//
+//                        //Si el k esimo camino tiene dos elem, es un camino que empieza y termina en el mismo nodo
+//                        if(caminosAux[i].size() == 2)
+//                            caminosAux.erase(caminosAux.begin() + i);
+//
+//                        solucionProb solActual(base.getCapacidad(), caminosAux);
+//                        sol.push_back(solActual);
+//                    }
+//
+//                    //(1, 1)
+//                    //Guardo el nodo a cambiar
+//                    Nodo buffer = caminosBase[k][l];
+//
+//                    //Hago el cambio de nodos
+//                    caminosBase[k][l] = caminosBase[i][j];
+//                    caminosBase[i][j] = buffer;
+//
+//                    //Si las capacidades de los dos caminos alcanzan entonces es un vecino
+//                    if(capacidadAlcanza(base.getCapacidad(), caminosBase[k]) && capacidadAlcanza(base.getCapacidad(), caminosBase[i])){
+//                        //cout << "ALCANZO LA CAPACIDAD!\n";
+//                        solucionProb solActual(base.getCapacidad(), caminosBase);
+//                        sol.push_back(solActual);
+//                    }
+//
+//                    //Devuelvo caminosBase a su estado original
+//                    caminosBase[i][j] = caminosBase[k][l];
+//                    caminosBase[k][l] = buffer;
+//                }
+//            }
+//        }
+//    }
+
     for(int i=0; i < caminosBase.size() - 1; i++){
         for(int j=1; j < caminosBase[i].size() - 1; j++){
             //de 1 a n-2 porque 0 y n-1 son el mismo nodo porque es el principio y el fin
@@ -254,9 +317,19 @@ vector<solucionProb> generarVecindarioEXCHANGE(solucionProb& base){
                         solucionProb solActual(base.getCapacidad(), caminosAux);
                         sol.push_back(solActual);
                     }
+                }
+            }
+        }
+    }
+
+    for(int i=0; i < caminosBase.size() - 1; i++){
+        for(int j=1; j < caminosBase[i].size() - 1; j++){
+            //de 1 a n-2 porque 0 y n-1 son el mismo nodo porque es el principio y el fin
+            for(int k = i+1; k < caminosBase.size(); k++){
+                for(int l=1; l < caminosBase[k].size() - 1; l++){
 
                     //(1,0); acá el i esimo le da nodos a los otros
-                    caminosAux = caminosBase;
+                    vector<vector<Nodo>> caminosAux = caminosBase;
 
                     caminosAux[k].insert(caminosAux[k].begin() + l, caminosAux[i][j]);
                     caminosAux[i].erase(caminosAux[i].begin() + j);
@@ -271,6 +344,17 @@ vector<solucionProb> generarVecindarioEXCHANGE(solucionProb& base){
                         solucionProb solActual(base.getCapacidad(), caminosAux);
                         sol.push_back(solActual);
                     }
+
+                }
+            }
+        }
+    }
+
+    for(int i=0; i < caminosBase.size() - 1; i++){
+        for(int j=1; j < caminosBase[i].size() - 1; j++){
+            //de 1 a n-2 porque 0 y n-1 son el mismo nodo porque es el principio y el fin
+            for(int k = i+1; k < caminosBase.size(); k++){
+                for(int l=1; l < caminosBase[k].size() - 1; l++){
 
                     //(1, 1)
                     //Guardo el nodo a cambiar

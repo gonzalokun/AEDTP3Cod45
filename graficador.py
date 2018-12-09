@@ -197,7 +197,7 @@ def main():
         plt.show()
             #graficarGrafo(nombre_archivo,nombre_archivo+"-ruteo"+str(i), cnames[i])
             #plt.show()
-        for i in range(7):
+        for i in range(6):
             graficarGrafo(nombre_archivo, nombre_archivo+"-ruteo"+str(i), listacnames[5+i])
         plt.show()
 
