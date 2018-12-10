@@ -419,6 +419,7 @@ struct NodoPol{
     friend bool operator<(const NodoPol& n1, const NodoPol& n2){
         //return (this->angulo < n.angulo || this->distacia < n.distacia || this->id < n.id);
         return (n1.angulo < n2.angulo || ((n1.angulo == n2.angulo) && n1.distacia < n2.distacia) || ((n1.angulo == n2.angulo) && (n1.distacia == n2.distacia) && (n1.id < n2.id)));
+        //return (n1.angulo < n2.angulo);
     }
 };
 

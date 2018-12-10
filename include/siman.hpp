@@ -82,7 +82,4 @@ vector<solucionProb> generarVecindarioEXCHANGE(solucionProb& base);
 
 bool capacidadAlcanza(float capacidad, vector<Nodo> camino);
 
-//Implementada del paper
-solucionProb simulatedAnnealingOsman(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento);
-
 #endif // SIMAN_H

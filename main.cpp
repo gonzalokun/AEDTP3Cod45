@@ -173,7 +173,7 @@ int main()
     double timeSwap = chrono::duration<double, milli>(timeEndSwap - timeStartSwap).count();
 
     auto timeStartExchange = chrono::steady_clock::now();
-    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 10000, 1, 10);
+    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 150, 1, 0.99);
     auto timeEndExchange = chrono::steady_clock::now();
 
     double timeExchange = chrono::duration<double, milli>(timeEndExchange - timeStartExchange).count();

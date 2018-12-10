@@ -78,13 +78,14 @@ vector<Nodo> simulatedAnnealingCamino(vector<Nodo>& caminoInicial, int modo, flo
 
         float energiaEstadoActual = calcularCostoCamino(caminoActual);
         float energiaNuevoEstado = calcularCostoCamino(solTentativa);
+        float deltaE = energiaNuevoEstado - energiaEstadoActual;
 
         if(energiaNuevoEstado < energiaEstadoActual){
             prob = 1.0;
         }
         else{
             //prob = exp(((energiaEstadoActual - energiaNuevoEstado) / tempActual));
-            prob = exp(-((energiaNuevoEstado - energiaEstadoActual) / tempActual));
+            prob = exp(-((deltaE) / tempActual));
         }
 
         if(prob >= r){
@@ -130,6 +131,8 @@ solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float tem
 
         //cout << "COSTO SOL ACTUAL: " << solActual.getCostoSol() << "\n";
 
+        cout << "TEMP ACTUAL: " << tempActual << "\n";
+
         vector<solucionProb> vecindario = generarVecindarioEXCHANGE(solActual);
 
         //cout << "EL TAMANO DE VECINDARIO DEL CICLO " << cantCiclos << " ES: " << vecindario.size() << "\n";
@@ -147,20 +150,24 @@ solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float tem
         float r = (float) rand()/RAND_MAX;
 
         //float prob = exp((-(calcularCostoCamino(solTentativa) - calcularCostoCamino(caminoActual)) / tempActual));
-        float prob;
+        float prob = -1;
 
         float energiaEstadoActual = solActual.getCostoSol();
         float energiaNuevoEstado = solTentativa.getCostoSol();
+        //float deltaE = energiaNuevoEstado - energiaEstadoActual;
+        float deltaE = energiaEstadoActual- energiaNuevoEstado;
 
         cout << "COSTO ESTADO ACTUAL: " << energiaEstadoActual << "\n";
         cout << "COSTO ESTADO NUEVO: " << energiaNuevoEstado << "\n";
+        cout << "DELTA E: " << deltaE << "\n";
 
         if(energiaNuevoEstado < energiaEstadoActual){
-            prob = 1.0;
+            solActual = solTentativa;
         }
         else{
             //prob = exp(((energiaEstadoActual - energiaNuevoEstado) / tempActual));
-            prob = exp(-((energiaNuevoEstado - energiaEstadoActual) / tempActual));
+            prob = exp(((deltaE) / tempActual));
+            cout << "Probabilidad: " << prob << "\n";
         }
 
         if(prob >= r){
@@ -171,6 +178,13 @@ solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float tem
             //cout << "----------------------------------------" << "\n";
             //cantSaltos++;
             solActual = solTentativa;
+
+            //tempActual -= coefEnfriamiento*2;
+            tempActual *= coefEnfriamiento;
+        }
+        else{
+            //tempActual -= coefEnfriamiento;
+            tempActual *= coefEnfriamiento;
         }
 
         //Guardamos la mejor
@@ -183,7 +197,8 @@ solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float tem
             cout << "SE REDUJO EL COSTO DE LA SOLUCION DE " << costoFinal << " A " << costoNuevo <<"\n";
         }
 
-        tempActual -= coefEnfriamiento;
+//        tempActual -= coefEnfriamiento;
+//        tempActual *= coefEnfriamiento;
     }
 
     //cout << "EN " << cantCiclos << " CICLOS SE HICIERON " << cantSaltos << " SALTOS\n";
@@ -390,21 +405,4 @@ bool capacidadAlcanza(float capacidad, vector<Nodo> camino){
     }
 
     return (capacidad >= demandaTotal);
-}
-
-solucionProb simulatedAnnealingOsman(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento){
-    //Se inicializan los parametros de temperatura
-
-    vector<solucionProb> vecindario = generarVecindarioEXCHANGE(solucionInicial);
-
-    //Se obtiene la max diferencia de costos
-    float maxDeltaCost = vecindario[0].getCostoSol() - solucionInicial.getCostoSol();
-    float minDeltaCost = vecindario[0].getCostoSol() - solucionInicial.getCostoSol();
-
-    for(solucionProb sol : vecindario){
-        if(maxDeltaCost < sol.getCostoSol() - solucionInicial.getCostoSol()){
-            //
-        }
-    }
-
 }
