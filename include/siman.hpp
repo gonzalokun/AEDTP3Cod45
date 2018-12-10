@@ -76,6 +76,8 @@ vector<vector<Nodo>> generarVecindario(vector<Nodo>& base, int modo);
 
 vector<vector<Nodo>> generarVecindarioSWAP(vector<Nodo>& base);
 
+vector<solucionProb> generarVecindarioSWAP2(solucionProb& base);
+
 vector<vector<Nodo>> generarVecindarioINTERCHANGE(vector<Nodo>& base);
 
 vector<solucionProb> generarVecindarioEXCHANGE(solucionProb& base);

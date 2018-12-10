@@ -126,6 +126,8 @@ solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float tem
     //std::default_random_engine generator(seed());
     //generator.seed(seed());
 
+    int cantRep;
+
     while(tempActual >= temperaturaMin){
         //cantCiclos++;
 
@@ -133,7 +135,9 @@ solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float tem
 
         cout << "TEMP ACTUAL: " << tempActual << "\n";
 
-        vector<solucionProb> vecindario = generarVecindarioEXCHANGE(solActual);
+        //vector<solucionProb> vecindario = generarVecindarioEXCHANGE(solActual);
+
+        vector<solucionProb> vecindario = generarVecindarioSWAP2(solActual);
 
         //cout << "EL TAMANO DE VECINDARIO DEL CICLO " << cantCiclos << " ES: " << vecindario.size() << "\n";
 
@@ -170,7 +174,7 @@ solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float tem
             cout << "Probabilidad: " << prob << "\n";
         }
 
-        if(prob >= r){
+        if(prob - 0.5 >= r){
             //cout << "VALOR r: " << r << "\n";
             //cout << "VALOR prob: " << prob << "\n";
             //cout << "energiaEstadoActual: " << energiaEstadoActual << "\n";
@@ -180,11 +184,12 @@ solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float tem
             solActual = solTentativa;
 
             //tempActual -= coefEnfriamiento*2;
-            tempActual *= coefEnfriamiento;
+//            tempActual *= coefEnfriamiento;
+//            cantRep = 0;
         }
         else{
             //tempActual -= coefEnfriamiento;
-            tempActual *= coefEnfriamiento;
+//            tempActual *= coefEnfriamiento;
         }
 
         //Guardamos la mejor
@@ -198,7 +203,7 @@ solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float tem
         }
 
 //        tempActual -= coefEnfriamiento;
-//        tempActual *= coefEnfriamiento;
+        tempActual *= coefEnfriamiento;
     }
 
     //cout << "EN " << cantCiclos << " CICLOS SE HICIERON " << cantSaltos << " SALTOS\n";
@@ -224,6 +229,22 @@ vector<vector<Nodo>> generarVecindarioSWAP(vector<Nodo>& base){
         nuevo[i+1] = base[i];
         sol.push_back(nuevo);
     }
+    return sol;
+}
+
+vector<solucionProb> generarVecindarioSWAP2(solucionProb& base){
+    vector<solucionProb> sol;
+
+    for(int i=0; i < base.getCaminos().size(); i++){
+        vector<vector<Nodo>> variaciones = generarVecindarioSWAP(base.getCaminos()[i]);
+        vector<vector<Nodo>> caminos = base.getCaminos();
+
+        for(int j=0; j < variaciones.size(); j++){
+            caminos[i] = variaciones[j];
+            sol.push_back(solucionProb(base.getCapacidad(), caminos));
+        }
+    }
+
     return sol;
 }
 
