@@ -71,11 +71,11 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad, string& 
 
     int tam = 0;
     entrada >> tam;
-    cout << "El tam es: " << tam << endl;
+    //cout << "El tam es: " << tam << endl;
     vn = vector<Nodo>(tam);
 
     entrada >> capacidad;
-    cout << "La capacidad es: " << capacidad << endl;
+    //cout << "La capacidad es: " << capacidad << endl;
 
     std::string line;
     int estado = LEYENDO_PUNTOS; //0 - ingreso puntos, 1 - ingreso demandas, 2 - ingreso punto central
@@ -90,7 +90,7 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad, string& 
 
         if(line.compare("Dem") == 0 || cont > tam){
             estado = DEFINIENDO_DEMANDAS;
-            cout << "CONT: " << cont << "\n";
+            //cout << "CONT: " << cont << "\n";
             cont = 0;
             continue;
         }
@@ -107,7 +107,7 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad, string& 
         case LEYENDO_PUNTOS: {
             std::stringstream ss(line);
 
-            cout << "LA LINEA DE TEXTO ES " << line << endl;
+            //cout << "LA LINEA DE TEXTO ES " << line << endl;
 
             int id;
             float x;
@@ -117,25 +117,25 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad, string& 
 
             vn[id - 1] = Nodo(x, y, id);
 
-            cout << "LEIDO ID: " << id << ", X: " << x << ", Y: " << y << endl;
+            //cout << "LEIDO ID: " << id << ", X: " << x << ", Y: " << y << endl;
             } break;
 
         case DEFINIENDO_DEMANDAS:{
             std::stringstream ss(line);
 
-            cout << "LA LINEA DE TEXTO ES " << line << endl;
+            //cout << "LA LINEA DE TEXTO ES " << line << endl;
 
             int id;
             float demanda;
 
             ss >> id >> demanda;
 
-            cout << "ID LEIDO ES " << id << endl;
-            cout << "DEMANDA LEIDA ES " << demanda << endl;
+            //cout << "ID LEIDO ES " << id << endl;
+            //cout << "DEMANDA LEIDA ES " << demanda << endl;
 
             vn[id - 1].demanda = demanda;
 
-            cout << "DEMANDA DE NODO " << id << " ES " << vn[id - 1].demanda << endl;
+            //cout << "DEMANDA DE NODO " << id << " ES " << vn[id - 1].demanda << endl;
             } break;
 
         case DEFINIENDO_PUNTO_CENTRAL:{
@@ -147,13 +147,13 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad, string& 
 
                 ss >> id;
 
-                cout << "PUNTO CENTRAL LEIDO ES " << id << endl;
+                //cout << "PUNTO CENTRAL LEIDO ES " << id << endl;
 
                 if(id != -1){
                     lcp.setearNodoBase(vn[id - 1]);
                 }
 
-                cout << "SE SETEO COMO PUNTO CENTRAL EL NODO CON ID " << lcp.getNodoBase().indice << endl;
+                //cout << "SE SETEO COMO PUNTO CENTRAL EL NODO CON ID " << lcp.getNodoBase().indice << endl;
 
                 seteadoNodoCentral = true;
             }

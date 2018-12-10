@@ -84,4 +84,6 @@ vector<solucionProb> generarVecindarioEXCHANGE(solucionProb& base);
 
 bool capacidadAlcanza(float capacidad, vector<Nodo> camino);
 
+vector<solucionProb> generarVecindarioPrimeroConTodos(solucionProb& base);
+
 #endif // SIMAN_H

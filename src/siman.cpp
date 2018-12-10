@@ -174,7 +174,7 @@ solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float tem
             cout << "Probabilidad: " << prob << "\n";
         }
 
-        if(prob - 0.5 >= r){
+        if(prob >= r){
             //cout << "VALOR r: " << r << "\n";
             //cout << "VALOR prob: " << prob << "\n";
             //cout << "energiaEstadoActual: " << energiaEstadoActual << "\n";
@@ -245,6 +245,34 @@ vector<solucionProb> generarVecindarioSWAP2(solucionProb& base){
         }
     }
 
+    for (int i = 0; i < base.getCaminos().size()-1; ++i) {
+        vector<vector<Nodo>> nueva = base.getCaminos();
+        Nodo n = nueva[i][nueva[i].size()-2];
+        nueva[i][nueva[i].size()-2] = nueva[i+1][1];
+        nueva[i+1][1] = n;
+        if (capacidadAlcanza(base.getCapacidad(), nueva[i]) && capacidadAlcanza(base.getCapacidad(), nueva[i+1]))
+            sol.push_back(solucionProb(base.getCapacidad(), nueva));
+    }
+
+    return sol;
+}
+
+vector<solucionProb> generarVecindarioPrimeroConTodos(solucionProb& base) {
+    vector<solucionProb> sol;
+    for (int i = 0; i < base.getCaminos().size(); ++i) {
+        for (int j = 1; j < base.getCaminos()[i].size()-1; ++j) {
+            for (int x = 0; x < base.getCaminos().size(); ++x) {
+                for (int y = 1; y < base.getCaminos()[x].size()-1; ++y) {
+                    vector<vector<Nodo>> nueva = base.getCaminos();
+                    Nodo n = nueva[i][j];
+                    nueva[i][j] = nueva[x][y];
+                    nueva[x][y] = n;
+                    if (capacidadAlcanza(base.getCapacidad(), nueva[x]) && capacidadAlcanza(base.getCapacidad(), nueva[i]))
+                        sol.push_back(solucionProb(base.getCapacidad(), nueva));
+                }
+            }
+        }
+    }
     return sol;
 }
 

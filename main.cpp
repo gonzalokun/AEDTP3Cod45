@@ -128,7 +128,7 @@ int main()
 
     cout << "EL COSTO DE LA SOL ANTES DE SIMAN: " << solActual.getCostoSol() << endl;
 
-    system("pause");
+    //system("pause");
 
     //EMPIEZA SIMAN////////////////////////////
 
@@ -173,7 +173,7 @@ int main()
     double timeSwap = chrono::duration<double, milli>(timeEndSwap - timeStartSwap).count();
 
     auto timeStartExchange = chrono::steady_clock::now();
-    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 5000, 0.001, 0.99);
+    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 0.5, 0.001, 0.99);
     auto timeEndExchange = chrono::steady_clock::now();
 
     double timeExchange = chrono::duration<double, milli>(timeEndExchange - timeStartExchange).count();
