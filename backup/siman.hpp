@@ -3,6 +3,10 @@
 
 #include "basics3.hpp"
 
+#define VECINDARIO_SWAP 0
+#define VECINDARIO_INTERCHANGE 1
+#define VECINDARIO_EXCHANGE 2
+
 float calcularCostoCamino(vector<Nodo>& camino);
 
 //Con esto represento a las soluciones
@@ -62,11 +66,21 @@ public:
     }
 };
 
-solucionProb simulatedAnnealing(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento);
+solucionProb simulatedAnnealingGeneral(solucionProb& solucionInicial, int modo, float temperaturaMax, float temperaturaMin, float coefEnfriamiento);
+
+vector<Nodo> simulatedAnnealingCamino(vector<Nodo>& caminoInicial, int modo, float temperaturaMax, float temperaturaMin, float coefEnfriamiento);
+
+solucionProb simulatedAnnealingExchange(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento);
+
+vector<vector<Nodo>> generarVecindario(vector<Nodo>& base, int modo);
 
 vector<vector<Nodo>> generarVecindarioSWAP(vector<Nodo>& base);
 
 vector<solucionProb> generarVecindarioSWAP2(solucionProb& base);
+
+vector<vector<Nodo>> generarVecindarioINTERCHANGE(vector<Nodo>& base);
+
+vector<solucionProb> generarVecindarioEXCHANGE(solucionProb& base);
 
 bool capacidadAlcanza(float capacidad, vector<Nodo> camino);
 

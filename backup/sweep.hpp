@@ -14,6 +14,8 @@ vector<Nodo> tsp2(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, fl
 
 vector<Nodo> tsp_con_grasp(vector<Nodo>& nodos, int nodo_comienzo, float &costo_viaje, float p, float MAX_X, float MAX_Y);
 
+vector<Nodo> opt_swap(vector<Nodo>& nodos, vector<Nodo>& solucion_actual, int tope1, int tope2, float& costo_solucion);
+
 vector<Nodo> opt_swap2(vector<Nodo>& solucion_actual, int tope1, int tope2, float& costo_solucion);
 
 void generarOutput(const vector<vector<Nodo>>& clusters, string nombre, Nodo depo);

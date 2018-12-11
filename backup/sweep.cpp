@@ -43,10 +43,12 @@ void MatrizAdyacencias::convertirAListaAdy(ListaAdyacencias& la) {
     Arista ar;
     int cantAg=0;
     for (int i = 0; i < (rep.size()); ++i) {
+        //cout <<i<<endl;
         for (int j = 0; j < rep[0].size(); ++j) {
             if(rep[i][j] !=-1) {//si hay arista que los une
                 ar.peso=rep[i][j];
                 ar.desde = nodos[i];
+                //cout <<"agreggo arista: "<<cantAg<<" "<< nodos[i].x<<","<<nodos[i].y<<"  "<< nodos[j].x<<","<<nodos[j].y<<endl;
                 ar.hasta = nodos[j];
                 ar.indice=cantAg++;
                 la.agregarArista(ar);
@@ -69,9 +71,11 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad, string& 
 
     int tam = 0;
     entrada >> tam;
+    //cout << "El tam es: " << tam << endl;
     vn = vector<Nodo>(tam);
 
     entrada >> capacidad;
+    //cout << "La capacidad es: " << capacidad << endl;
 
     std::string line;
     int estado = LEYENDO_PUNTOS; //0 - ingreso puntos, 1 - ingreso demandas, 2 - ingreso punto central
@@ -86,6 +90,7 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad, string& 
 
         if(line.compare("Dem") == 0 || cont > tam){
             estado = DEFINIENDO_DEMANDAS;
+            //cout << "CONT: " << cont << "\n";
             cont = 0;
             continue;
         }
@@ -102,6 +107,8 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad, string& 
         case LEYENDO_PUNTOS: {
             std::stringstream ss(line);
 
+            //cout << "LA LINEA DE TEXTO ES " << line << endl;
+
             int id;
             float x;
             float y;
@@ -110,18 +117,25 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad, string& 
 
             vn[id - 1] = Nodo(x, y, id);
 
+            //cout << "LEIDO ID: " << id << ", X: " << x << ", Y: " << y << endl;
             } break;
 
         case DEFINIENDO_DEMANDAS:{
             std::stringstream ss(line);
+
+            //cout << "LA LINEA DE TEXTO ES " << line << endl;
 
             int id;
             float demanda;
 
             ss >> id >> demanda;
 
+            //cout << "ID LEIDO ES " << id << endl;
+            //cout << "DEMANDA LEIDA ES " << demanda << endl;
+
             vn[id - 1].demanda = demanda;
 
+            //cout << "DEMANDA DE NODO " << id << " ES " << vn[id - 1].demanda << endl;
             } break;
 
         case DEFINIENDO_PUNTO_CENTRAL:{
@@ -133,9 +147,13 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad, string& 
 
                 ss >> id;
 
+                //cout << "PUNTO CENTRAL LEIDO ES " << id << endl;
+
                 if(id != -1){
                     lcp.setearNodoBase(vn[id - 1]);
                 }
+
+                //cout << "SE SETEO COMO PUNTO CENTRAL EL NODO CON ID " << lcp.getNodoBase().indice << endl;
 
                 seteadoNodoCentral = true;
             }
@@ -149,17 +167,21 @@ void cargarDatos(ListaCordPol& lcp, vector<Nodo>& vn, float& capacidad, string& 
         lcp.setearNodoBase(vn[0]);
     }
 
+    //cout << "AHORA SE CARGA LA LISTA DE COORD. POLARES" << endl;
+
     //Ya esta cargado el vector
     //Ahora cargo la lista Coord. Polares
     for(int i = 0; i < vn.size(); i++){
-        //Agrego todos los puntos menos el de depósito, que sabemos que siempre va a estar en el camino
+        //cout << "Voy a agregar al nodo con id: " << i << endl;
+        //Agrego todos los puntos menos el de dep�sito, que sabemos que siempre va a estar en el camino
         if(i + 1 != lcp.getNodoBase().indice){
+            //cout << "SE AGREGA A LA LISTA EL NODO CON ID: " << vn[i].indice << endl;
             lcp.agregarNodo(vn[i]);
         }
     }
 
     cout << "TERMINO LA CARGA DE DATOS" << endl;
-    //Debería estar cargada la lista
+    //Deber�a estar cargada la lista
 }
 
 //Ahora hacemos el sweep
@@ -170,8 +192,14 @@ vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, const vector<Nodo>& vn, 
     vector<Nodo> vecActual;
     vecActual.push_back(lcp.getNodoBase());
 
+    //int cont = 0;
+
     while(!lcp.vacia()){
+        //cout << "Ciclo: " << cont << endl;
+        //cout << "Tam. Lista: " << lcp.tam() << endl;
         if(capActual + lcp.siguiente().demanda <= capacidad){
+            //cout << "ID DE NODO A AGREGAR: " << lcp.siguiente().id << endl;
+            //cout << "DEMANDA DEL NODO: " << lcp.siguiente().demanda << endl;
             capActual += lcp.siguiente().demanda;
             vecActual.push_back(vn[lcp.siguiente().id - 1]);
             lcp.pop();
@@ -185,6 +213,7 @@ vector<vector<Nodo>> generarClusters(ListaCordPol& lcp, const vector<Nodo>& vn, 
             vecActual.push_back(lcp.getNodoBase());
         }
 
+        //cont++;
     }
 
     //Agrego el ultimo cluster que siempre se forma
@@ -289,6 +318,36 @@ vector<Nodo> tsp_con_grasp(vector<Nodo>& nodos, int nodo_comienzo, float &costo_
 }
 
 //
+
+vector<Nodo> opt_swap(vector<Nodo>& nodos, vector<Nodo>& solucion_actual, int tope1, int tope2, float& costo_solucion){//O(TAMCLUSTER_i)
+    /*
+     * 2optSwap(route, i, k) {
+       1. take route[0] to route[i-1] and add them in order to new_route
+       2. take route[i] to route[k] and add them in reverse order to new_route
+       3. take route[k+1] to end and add them in order to new_route
+       return new_route;
+       */
+    costo_solucion = 0;
+    vector<Nodo> nueva_sol;
+    float costo_nueva_sol = 0;
+    for (int i = 0; i < solucion_actual.size(); i++) {
+        if(i<tope1) {//agrego en orden de solucion actual
+            nueva_sol.push_back(solucion_actual[i]);
+        }
+        else if(i>= tope1 && i <= tope2){//agrego en orden inverso
+            nueva_sol.push_back(solucion_actual[i+abs(tope2-i)]);
+
+        }else if(i>tope2){ //agrego en orden de sol actual
+            nueva_sol.push_back(solucion_actual[i]);
+        }
+    }
+    for (int i = 0; i < nueva_sol.size(); ++i) {
+        costo_nueva_sol += distancia_euclidea(nueva_sol[i].x, nueva_sol[i].y, nueva_sol[i + 1].x, nueva_sol[i + 1].y);
+    }
+    costo_solucion = costo_nueva_sol;
+    return solucion_actual;
+
+}
 
 vector<Nodo> opt_swap2(vector<Nodo>& solucion_actual, int tope1, int tope2, float& costo_solucion){//O(TAMCLUSTER_i)
 

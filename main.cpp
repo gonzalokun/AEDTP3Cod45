@@ -27,10 +27,6 @@ int main()
 
     cargarDatos(lcp, vn, capacidad, nombreCaso, kOpt, costoOpt);
 
-    //cout << "------------------------------" << endl;
-
-    //lcp.mostrarLista();
-
     cout << "------------------------------" << endl;
 
     cout << "TAM. DE LA LISTA: " << lcp.tam() << endl;
@@ -56,8 +52,6 @@ int main()
     }
 
     cout << "GENERANDO CLUSTERS" << "\n";
-
-    //auto timeStartSweep = chrono::steady_clock::now();
 
     clusters = generarClusters(lcp, vn, capacidad);
 
@@ -93,8 +87,6 @@ int main()
     //Voy solucionando todos los caminos
     for(int i = 0; i < clusters.size(); i++){
         float costoSol = 0;
-        //cout << "CALCULANDO CAMINO: " << i << "\n";
-        //caminosSol.push_back(tsp2(clusters[i], 0, costoSol, 1, max_x, max_y));
         caminosSol.push_back(tsp_con_grasp(clusters[i], 0, costoSol, 1, max_x, max_y));
     }
 
@@ -130,77 +122,26 @@ int main()
 
     system("pause");
 
-    //EMPIEZA SIMAN////////////////////////////
-
-//    cout << "TESTING CLASE SOL" << "\n";
-//
-//    solucionProb solNueva = solActual;
-//
-//    bool testLargo = solNueva.getCaminos().size() == solActual.getCaminos().size();
-//
-//    cout << "TEST TIENE LA MISMA CANT CAMINOS QUE LA DE LA SOL ACTUAL: " << ((testLargo)?"TRUE":"FALSE") << "\n";
-//
-//    system("pause");
-//
-//    bool testLargo2 = true;
-//
-//    for(int i = 0; i < solActual.getCaminos().size() && testLargo2; i++){
-//        testLargo2 = solActual.getCaminos()[i].size() == solNueva.getCaminos()[i].size();
-//    }
-//
-//    cout << "LOS CAMINOS DE TEST TIENEN LA MISMA LONGITUD QUE LOS DE LA SOL ACTUAL: " << ((testLargo2)?"TRUE":"FALSE") << "\n";
-//
-//    system("pause");
-//
-//    bool testIgualdad = true;
-//
-//    for(int i = 0; i < solActual.getCaminos().size() && testIgualdad; i++){
-//        for(int j=0; j < solActual.getCaminos()[i].size() && testIgualdad; j++){
-//            testIgualdad = solActual.getCaminos()[i][j] == solNueva.getCaminos()[i][j];
-//        }
-//    }
-//
-//    cout << "LOS ELEMENTOS DE LOS CAMINOS DE TEST Y LA SOL SON IGUALES: " << ((testIgualdad)?"TRUE":"FALSE") << "\n";
-//
-//    system("pause");
+    //----------EMPIEZA SIMAN----------//
 
     cout << "APLICANDO SIMAN A LA SOLUCION PARA VER SI MEJORA" << endl;
 
-    auto timeStartSwap = chrono::steady_clock::now();
-//    solucionProb solSWAP = simulatedAnnealingGeneral(solActual, VECINDARIO_SWAP, 10000, 1, 2);
-    auto timeEndSwap = chrono::steady_clock::now();
+    auto timeStartSimAn = chrono::steady_clock::now();
+    solucionProb solSimAn = simulatedAnnealing(solActual, 5, 0.001, 0.99);
+    auto timeEndSimAn = chrono::steady_clock::now();
 
-    double timeSwap = chrono::duration<double, milli>(timeEndSwap - timeStartSwap).count();
+    double timeSimAn = chrono::duration<double, milli>(timeEndSimAn - timeStartSimAn).count();
 
-    auto timeStartExchange = chrono::steady_clock::now();
-    solucionProb solEXCHANGE = simulatedAnnealingGeneral(solActual, VECINDARIO_EXCHANGE, 5000, 0.001, 0.99);
-    auto timeEndExchange = chrono::steady_clock::now();
-
-    double timeExchange = chrono::duration<double, milli>(timeEndExchange - timeStartExchange).count();
-
-//    cout << "EL COSTO DE LA SOL DESPUES DE SIMAN (SWAP): " << solSWAP.getCostoSol() << "\n";
-    cout << "EL COSTO DE LA SOL DESPUES DE SIMAN (EXCHANGE): " << solEXCHANGE.getCostoSol() << "\n";
+    cout << "EL COSTO DE LA SOL DESPUES DE SIMAN (EXCHANGE): " << solSimAn.getCostoSol() << "\n";
 
     cout << "------------------------------" << endl;
 
-    cout << "SOLUCION DEL SIMAN (SWAP)" << endl;
+    cout << "SOLUCION DEL SIMULATED ANNEALING" << endl;
 
-//    for(int i = 0; i < solSWAP.getCaminos().size(); i++) {
-//        cout << "CAMINO " << i << ": [";
-//        for (int j = 0; j < solSWAP.getCaminos()[i].size(); j++) {
-//            cout << solSWAP.getCaminos()[i][j].indice << ((j == solSWAP.getCaminos()[i].size() - 1)? ("]") : (", "));
-//        }
-//        cout << endl;
-//    }
-
-    cout << "------------------------------" << endl;
-
-    cout << "SOLUCION DEL SIMAN (EXCHANGE)" << endl;
-
-    for(int i = 0; i < solEXCHANGE.getCaminos().size(); i++) {
+    for(int i = 0; i < solSimAn.getCaminos().size(); i++) {
         cout << "CAMINO " << i << ": [";
-        for (int j = 0; j < solEXCHANGE.getCaminos()[i].size(); j++) {
-            cout << solEXCHANGE.getCaminos()[i][j].indice << ((j == solEXCHANGE.getCaminos()[i].size() - 1)? ("]") : (", "));
+        for (int j = 0; j < solSimAn.getCaminos()[i].size(); j++) {
+            cout << solSimAn.getCaminos()[i][j].indice << ((j == solSimAn.getCaminos()[i].size() - 1)? ("]") : (", "));
         }
         cout << endl;
     }
@@ -209,26 +150,14 @@ int main()
 
     cout << "GENERANDO OUTPUTS CAMINOS" << endl;
 
-    string swapExp = "SWAP";
+    string exchangeExp = "SIMAN";
 
-    string exchangeExp = "EXCHANGE";
+    convertir_para_tsp(solSimAn.getCaminos(), exchangeExp, max_x, max_y);
 
-//    convertir_para_tsp(solSWAP.getCaminos(), swapExp, max_x, max_y);
-
-    convertir_para_tsp(solEXCHANGE.getCaminos(), exchangeExp, max_x, max_y);
-
-//    generarOutput(solSWAP.getCaminos(), swapExp, lcp.getNodoBase());
-
-    generarOutput(solEXCHANGE.getCaminos(), exchangeExp, lcp.getNodoBase());
-
-//    ofstream arSalida;
-
-//    arSalida.open("../salida/" + swapExp + "/" + swapExp + ".txt", std::ios_base::app);
-//    arSalida << vn.size() << "," << solSWAP.getCostoSol() << "," << timeSwap << "\n";
-//    arSalida.close();
+    generarOutput(solSimAn.getCaminos(), exchangeExp, lcp.getNodoBase());
 
     arSalida.open("../salida/" + exchangeExp + "/" + exchangeExp + ".txt", std::ios_base::app);
-    arSalida << vn.size() << "," << solEXCHANGE.getCostoSol() << "," << timeExchange << "\n";
+    arSalida << vn.size() << "," << solSimAn.getCostoSol() << "," << timeSimAn << "\n";
     arSalida.close();
 
     arSalida.open("../salida/SWEEP/SWEEP.txt", std::ios_base::app);
