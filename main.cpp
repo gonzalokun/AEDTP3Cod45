@@ -55,29 +55,6 @@ int main()
 
     clusters = generarClusters(lcp, vn, capacidad);
 
-//    cout << "------------------------------" << "\n";
-//
-//    cout << "MOSTRANDO INDICES DE CADA CLUSTER" << "\n";
-//
-//    int nodosAsignados = 0;
-//
-//    for(int i = 0; i < clusters.size(); i++){
-//        float demandaCamino = 0;
-//
-//        cout << "CAMINO " << i + 1 << ": [";
-//        for(int j = 0; j < clusters[i].size(); j++){
-//            cout << clusters[i][j].indice << ((j == clusters[i].size() - 1)? "" : ", ");
-//            demandaCamino += clusters[i][j].demanda;
-//            nodosAsignados++; //CUENTA EL DEPOSITO VARIAS VECES
-//        }
-//
-//        cout << "] Demanda del camino: " << demandaCamino << " de " << capacidad << "\n";
-//    }
-//
-//    nodosAsignados -= clusters.size() - 1; //EL DEPO SE REPITE CANT. CAMINOS - 1 VECES
-//
-//    cout << "CANT. NODOS ASIGNADOS: " << nodosAsignados << " DE " << vn.size() << endl;
-
     cout << "------------------------------" << "\n";
 
     cout << "RESOLVIENDO CAMINOS POR TSP" << "\n";
@@ -95,18 +72,6 @@ int main()
     //Acá calculo lo que tardó en resolverlo el sweep
     double timeSweep = chrono::duration<double, milli>(timeEndSweep - timeStartSweep).count();
 
-//    cout << "------------------------------" << endl;
-//
-//    cout << "MOSTRANDO CAMINOS" << endl;
-//
-//    for(int i = 0; i < caminosSol.size(); i++) {
-//        cout << "CAMINO " << i << ": [";
-//        for (int j = 0; j < caminosSol[i].size(); j++) {
-//            cout << caminosSol[i][j].indice << ((j == caminosSol[i].size() - 1)? ("]") : (", "));
-//        }
-//        cout << endl;
-//    }
-
     cout << "------------------------------" << endl;
 
     solucionProb solActual(capacidad, caminosSol);
@@ -120,14 +85,18 @@ int main()
 
     cout << "EL COSTO DE LA SOL ANTES DE SIMAN: " << solActual.getCostoSol() << endl;
 
-    system("pause");
+    //system("pause");
 
     //----------EMPIEZA SIMAN----------//
 
     cout << "APLICANDO SIMAN A LA SOLUCION PARA VER SI MEJORA" << endl;
 
+    int cantPasos = 1000;
+    float tempMax = 20;
+    float coefEnfriamiento = 0.99;
+
     auto timeStartSimAn = chrono::steady_clock::now();
-    solucionProb solSimAn = simulatedAnnealing(solActual, 5, 0.001, 0.99);
+    solucionProb solSimAn = simulatedAnnealing(solActual, cantPasos, tempMax, coefEnfriamiento);
     auto timeEndSimAn = chrono::steady_clock::now();
 
     double timeSimAn = chrono::duration<double, milli>(timeEndSimAn - timeStartSimAn).count();
@@ -162,6 +131,10 @@ int main()
 
     arSalida.open("../salida/SWEEP/SWEEP.txt", std::ios_base::app);
     arSalida << vn.size() << "," << solActual.getCostoSol() << "," << timeSweep << "\n";
+    arSalida.close();
+
+    arSalida.open("../salida/SIMAN.csv", std::ios_base::app);
+    arSalida << nombreCaso << "," << vn.size() << "," << cantPasos << "," << tempMax << "," << coefEnfriamiento << "," << solActual.getCostoSol() << "," << solSimAn.getCostoSol() << "," << costoOpt << "," << timeSimAn << "\n";
     arSalida.close();
 
     cout << "------------------------------" << endl;

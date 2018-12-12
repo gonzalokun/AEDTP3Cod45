@@ -62,11 +62,13 @@ public:
     }
 };
 
-solucionProb simulatedAnnealing(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento);
+//solucionProb simulatedAnnealing(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento, int cantPasosMax);
 
-vector<vector<Nodo>> generarVecindarioSWAP(vector<Nodo>& base);
+solucionProb simulatedAnnealing(solucionProb& solucionInicial, int cantPasosMax, float temperaturaMax, float coefEnfriamiento);
 
-vector<solucionProb> generarVecindarioSWAP2(solucionProb& base);
+vector<vector<Nodo>> generarCambios(vector<Nodo>& base);
+
+vector<solucionProb> generarVecindario(solucionProb& base);
 
 bool capacidadAlcanza(float capacidad, vector<Nodo> camino);
 

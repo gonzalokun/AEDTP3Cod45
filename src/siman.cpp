@@ -13,7 +13,8 @@ float calcularCostoCamino(vector<Nodo>& camino){
     return calculoCamino;
 }
 
-solucionProb simulatedAnnealing(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento){
+//solucionProb simulatedAnnealing(solucionProb& solucionInicial, float temperaturaMax, float temperaturaMin, float coefEnfriamiento, int cantPasosMax)
+solucionProb simulatedAnnealing(solucionProb& solucionInicial, int cantPasosMax, float temperaturaMax, float coefEnfriamiento){
     float tempActual = temperaturaMax;
     solucionProb solFinal = solucionInicial;
     solucionProb solActual = solucionInicial;
@@ -22,11 +23,12 @@ solucionProb simulatedAnnealing(solucionProb& solucionInicial, float temperatura
     std::random_device seed;
     std::mt19937 engine(seed());
 
-    while(tempActual >= temperaturaMin){
+    int cantPasos = 0;
+    while(cantPasos < cantPasosMax){
 
         cout << "TEMP ACTUAL: " << tempActual << "\n";
 
-        vector<solucionProb> vecindario = generarVecindarioSWAP2(solActual);
+        vector<solucionProb> vecindario = generarVecindario(solActual);
 
         std::uniform_int_distribution<int> choose(0, vecindario.size()-1);
 
@@ -47,6 +49,7 @@ solucionProb simulatedAnnealing(solucionProb& solucionInicial, float temperatura
         cout << "COSTO ESTADO ACTUAL: " << energiaEstadoActual << "\n";
         cout << "COSTO ESTADO NUEVO: " << energiaNuevoEstado << "\n";
         cout << "DELTA E: " << deltaE << "\n";
+        cout << "PASO: " << cantPasos << "\n";
 
         if(energiaNuevoEstado < energiaEstadoActual){
             solActual = solTentativa;
@@ -87,13 +90,15 @@ solucionProb simulatedAnnealing(solucionProb& solucionInicial, float temperatura
 //        tempActual -= coefEnfriamiento;
         tempActual *= coefEnfriamiento;
 
+        cantPasos++;
+
         cout << "----------------------------------------" << "\n";
     }
 
     return solFinal;
 }
 
-vector<vector<Nodo>> generarVecindarioSWAP(vector<Nodo>& base){
+vector<vector<Nodo>> generarCambios(vector<Nodo>& base){
     vector<vector<Nodo>> sol;
     for(int i=1; i < base.size() - 2; i++){
         vector<Nodo> nuevo = base;
@@ -104,11 +109,11 @@ vector<vector<Nodo>> generarVecindarioSWAP(vector<Nodo>& base){
     return sol;
 }
 
-vector<solucionProb> generarVecindarioSWAP2(solucionProb& base){
+vector<solucionProb> generarVecindario(solucionProb& base){
     vector<solucionProb> sol;
 
     for(int i=0; i < base.getCaminos().size(); i++){
-        vector<vector<Nodo>> variaciones = generarVecindarioSWAP(base.getCaminos()[i]);
+        vector<vector<Nodo>> variaciones = generarCambios(base.getCaminos()[i]);
         vector<vector<Nodo>> caminos = base.getCaminos();
 
         for(int j=0; j < variaciones.size(); j++){
