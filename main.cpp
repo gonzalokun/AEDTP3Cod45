@@ -465,95 +465,122 @@ int main()
         }
     }
 
-    //SWEEP
-    cout << "GENERANDO CLUSTERS" << "\n";
+//    //SWEEP
+//    cout << "GENERANDO CLUSTERS" << "\n";
+//
+//    clusteringUsado = "SWEEP";
+//
+//    clusters = generarClusters(lcp, vn, capacidad);
+//
+//    cout << "------------------------------" << "\n";
+//
+//    cout << "RESOLVIENDO CAMINOS POR TSP" << "\n";
+//
+//    //Voy solucionando todos los caminos
+//    for(int i = 0; i < clusters.size(); i++){
+//        float costoSol = 0;
+//        caminosSol.push_back(tsp_con_grasp(clusters[i], 0, costoSol, 1, max_x, max_y));
+//    }
+//
+//    auto timeEndSweep = chrono::steady_clock::now();
+//
+//    //Acá calculo lo que tardó en resolverlo el sweep
+//    double timeSweep = chrono::duration<double, milli>(timeEndSweep - timeStartSweep).count();
+//
+//    cout << "------------------------------" << endl;
+//
+//    //FIN SWEEP
 
-    clusters = generarClusters(lcp, vn, capacidad);
+    //HEURISTICAS DE DYLAN - GABI
 
-    cout << "------------------------------" << "\n";
+//    clusteringUsado = "SAVINGS";
+    clusteringUsado = "VMC";
+    //ACA SE USAN:
+    //  Savings
+    //  Golosa 1 - Vecino Más Cercano (SE USA ESTA)
 
-    cout << "RESOLVIENDO CAMINOS POR TSP" << "\n";
+    System entrada(vn.size());
+    entrada.setCapacity((unsigned int) capacidad);
 
-    //Voy solucionando todos los caminos
-    for(int i = 0; i < clusters.size(); i++){
-        float costoSol = 0;
-        caminosSol.push_back(tsp_con_grasp(clusters[i], 0, costoSol, 1, max_x, max_y));
+    //El primero agregado es el depo
+    entrada.addCustomer((unsigned int) lcp.getNodoBase().indice, lcp.getNodoBase().x, lcp.getNodoBase().y);
+    entrada.setDemand((unsigned int) lcp.getNodoBase().indice, 0);
+
+    for(int i=0; i < vn.size(); i++){
+        if(vn[i] == lcp.getNodoBase())
+            continue;
+        entrada.addCustomer((unsigned int) vn[i].indice, vn[i].x, vn[i].y);
+        entrada.setDemand((unsigned int) vn[i].indice, (unsigned int)  vn[i].demanda);
     }
 
-    auto timeEndSweep = chrono::steady_clock::now();
+//    Respuesta res = pesoCaminoTotalCW2(entrada);
+    Respuesta res = heuristicaGolosa(entrada);
 
-    //Acá calculo lo que tardó en resolverlo el sweep
-    double timeSweep = chrono::duration<double, milli>(timeEndSweep - timeStartSweep).count();
+    for(Route ruta : res.obtenerRutas()){
+        vector<Nodo> camino;
+        camino.push_back(lcp.getNodoBase());
+        for(Customer cus : ruta.getRoute()){
+            camino.push_back(vn[cus.getID() - 1]);
+        }
+        camino.push_back(lcp.getNodoBase());
+        caminosSol.push_back(camino);
+    }
 
-    cout << "------------------------------" << endl;
-
-    //FIN SWEEP
-
-//    //HEURISTICAS DE DYLAN - GABI
-//
-//    clusteringUsado = "SAVINGS";
-//    //ACA SE USAN:
-//    //  Savings
-//    //  Golosa 1 - Vecino Más Cercano (SE USA ESTA)
-//
-//    System entrada(vn.size());
-//    entrada.setCapacity((unsigned int) capacidad);
-//
-//    //El primero agregado es el depo
-//    entrada.addCustomer((unsigned int) lcp.getNodoBase().indice, lcp.getNodoBase().x, lcp.getNodoBase().y);
-//    entrada.setDemand((unsigned int) lcp.getNodoBase().indice, 0);
-//
-//    for(int i=0; i < vn.size(); i++){
-//        if(vn[i] == lcp.getNodoBase())
-//            continue;
-//        entrada.addCustomer((unsigned int) vn[i].indice, vn[i].x, vn[i].y);
-//        entrada.setDemand((unsigned int) vn[i].indice, (unsigned int)  vn[i].demanda);
-//    }
-//
-////    Respuesta res = pesoCaminoTotalCW2(entrada);
-//    Respuesta res = heuristicaGolosa(entrada);
-//
-//    for(Route ruta : res.obtenerRutas()){
-//        vector<Nodo> camino;
-//        camino.push_back(lcp.getNodoBase());
-//        for(Customer cus : ruta.getRoute()){
-//            camino.push_back(vn[cus.getID() - 1]);
-//        }
-//        camino.push_back(lcp.getNodoBase());
-//        caminosSol.push_back(camino);
-//    }
-//
-//    cout << "------------------------------" << endl;
-//
-//    cout << "MOSTRANDO CAMINOS" << endl;
-//
-//    for(int i = 0; i < caminosSol.size(); i++) {
-//        cout << "CAMINO " << i << ": [";
-//        for (int j = 0; j < caminosSol[i].size(); j++) {
-//            cout << caminosSol[i][j].indice << ((j == caminosSol[i].size() - 1)? ("]") : (", "));
-//        }
-//        cout << endl;
-//    }
-//
-//    cout << "------------------------------" << endl;
+    //FIN HURISTICA DYLAN GABI
 
     //system("pause");
 
-    //HEURISTICA DE DIEGO
-
+//    //HEURISTICA DE DIEGO
+//
 //    clusteringUsado = "ALTSWEEP";
+//
+//    ifstream arEntrada;
+//    arEntrada.open("caminoD.txt");
+//
+//    vector<Nodo> camTemp;
+//
+//    while(!arEntrada.eof()){
+//        string ch;
+//        arEntrada >> ch;
+//        cout << "CARACTER LEIDO: " << ch << endl;
+//
+//        if(ch.compare("f") == 0){
+//            caminosSol.push_back(camTemp);
+//            camTemp.clear();
+//        }
+//        else{
+//            std::stringstream ss(ch);
+//
+//            int id;
+//            ss >> id;
+//
+//            camTemp.push_back(vn[id-1]);
+//        }
+//    }
+//
+//    arEntrada.close();
+//
+//    //FIN HEURISTICA DIEGO
 
-    //
+    cout << "------------------------------" << endl;
 
-    //FIN HEURISTICA DIEGO
+    cout << "MOSTRANDO CAMINOS" << endl;
+
+    for(int i = 0; i < caminosSol.size(); i++) {
+        cout << "CAMINO " << i << ": [";
+        for (int j = 0; j < caminosSol[i].size(); j++) {
+            cout << caminosSol[i][j].indice << ((j == caminosSol[i].size() - 1)? ("]") : (", "));
+        }
+        cout << endl;
+    }
+
+    cout << "------------------------------" << endl;
+
+    //system("pause");
 
     solucionProb solActual(capacidad, caminosSol);
 
-    //k_means clust = altSweep(vn, max_x, max_y, lcp.getNodoBase());
-
-    cout << "SE SOBREVIVIO" << endl;
-
-    system("pause");
+    //system("pause");
 
     //Guardo el archivo
     ofstream arSalida;
